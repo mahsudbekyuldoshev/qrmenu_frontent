@@ -1,0 +1,94 @@
+@import "tailwindcss";
+
+:root {
+  --bg: #f0f3f6;
+  --surface: #e4e9ef;
+  --surface-2: #d8dee6;
+  --surface-3: #c9d1dc;
+  --ink: #12151a;
+  --muted: #5b6573;
+  --line: #cfd6e0;
+  --accent: #0f766e;
+  --accent-fg: #f0fdfa;
+  --accent-bright: #2dd4bf;
+  --kds-bg: #0d1117;
+  --background: var(--bg);
+  --foreground: var(--ink);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-body);
+  --font-display: var(--font-display);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body), system-ui, sans-serif;
+}
+
+.menu-shell {
+  background:
+    radial-gradient(ellipse 80% 50% at 10% -10%, rgba(15, 118, 110, 0.12), transparent),
+    radial-gradient(ellipse 60% 40% at 100% 0%, rgba(18, 21, 26, 0.05), transparent),
+    var(--bg);
+}
+
+.kds-shell {
+  background:
+    radial-gradient(ellipse 70% 40% at 0% 0%, rgba(45, 212, 191, 0.1), transparent),
+    radial-gradient(ellipse 50% 40% at 100% 100%, rgba(6, 118, 71, 0.08), transparent),
+    var(--kds-bg);
+  color: #fff;
+}
+
+.director-shell {
+  background:
+    linear-gradient(180deg, #f5f7fa 0%, #eef2f6 45%, #f0f3f6 100%);
+}
+
+.hub-shell {
+  background:
+    linear-gradient(145deg, #12151a 0%, #1a2228 42%, #0f3d3a 100%);
+  color: #f5f7fa;
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse-soft {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.animate-fade-up {
+  animation: fade-up 0.45s ease-out both;
+}
+
+.animate-pulse-soft {
+  animation: pulse-soft 2.4s ease-in-out infinite;
+}

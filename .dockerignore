@@ -1,0 +1,16 @@
+node_modules
+.next
+.git
+.idea
+.venv
+*.md
+.env*
+!.env.example
+Dockerfile*
+docker-compose*
+.dockerignore
+npm-debug.log*
+coverage
+.DS_Store
+AGENTS.md
+CLAUDE.md
