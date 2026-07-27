@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Manrope, Syne } from "next/font/google";
 import "./globals.css";
+import { PreferencesProvider } from "@/providers/PreferencesProvider";
 
 const display = Syne({
   variable: "--font-display",
@@ -26,8 +27,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="uz" className={`${display.variable} ${body.variable} h-full`}>
-      <body className="min-h-full antialiased">{children}</body>
+    <html
+      lang="uz"
+      suppressHydrationWarning
+      className={`${display.variable} ${body.variable} h-full`}
+    >
+      <body className="min-h-full antialiased">
+        <PreferencesProvider>{children}</PreferencesProvider>
+      </body>
     </html>
   );
 }

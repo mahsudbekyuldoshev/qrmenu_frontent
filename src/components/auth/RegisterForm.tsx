@@ -110,7 +110,7 @@ export function RegisterForm() {
       />
 
       <fieldset className="space-y-2">
-        <legend className="text-sm font-medium text-white/80">Rol</legend>
+        <legend className="text-sm font-medium text-[var(--ink)]">Rol</legend>
         <div className="grid grid-cols-3 gap-2">
           {roles.map((item) => (
             <button
@@ -120,14 +120,14 @@ export function RegisterForm() {
               className={cn(
                 "rounded-xl border px-2 py-2.5 text-left transition",
                 role === item.value
-                  ? "border-[var(--accent-bright)]/50 bg-[var(--accent)]/25 text-white"
-                  : "border-white/12 bg-white/5 text-white/70 hover:border-white/25 hover:bg-white/8",
+                  ? "border-[var(--accent)]/50 bg-[var(--accent)]/15 text-[var(--ink)]"
+                  : "border-[var(--line)] bg-[var(--surface)] text-[var(--muted)] hover:border-[var(--accent)]/30 hover:bg-[var(--surface-2)]",
               )}
             >
-              <span className="block text-xs font-semibold sm:text-sm">
+              <span className="block text-xs font-semibold sm:text-sm text-[var(--ink)]">
                 {item.label}
               </span>
-              <span className="mt-0.5 hidden text-[10px] text-white/45 sm:block">
+              <span className="mt-0.5 hidden text-[10px] text-[var(--muted)] sm:block">
                 {item.hint}
               </span>
             </button>
@@ -148,9 +148,9 @@ export function RegisterForm() {
         trailing={
           <button
             type="button"
-            className="rounded-lg p-2 text-white/45 transition hover:bg-white/10 hover:text-white"
+            className="rounded-lg p-2 text-[var(--muted)] transition hover:bg-[var(--surface-2)] hover:text-[var(--ink)]"
             onClick={() => setShowPassword((v) => !v)}
-            aria-label={showPassword ? "Parolni yashirish" : "Parolni ko‘rsatish"}
+            aria-label={showPassword ? "Parolni yashirish" : "Parolni ko'rsatish"}
           >
             {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
           </button>
@@ -172,7 +172,7 @@ export function RegisterForm() {
       {error ? (
         <div
           role="alert"
-          className="rounded-xl border border-red-400/25 bg-red-500/10 px-3 py-2 text-sm text-red-200"
+          className="rounded-xl border border-red-400/25 bg-red-500/10 px-3 py-2 text-sm text-red-500 dark:text-red-400"
         >
           {error}
         </div>
