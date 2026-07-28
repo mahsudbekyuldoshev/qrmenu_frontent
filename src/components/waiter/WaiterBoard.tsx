@@ -1,14 +1,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { BellRing, Link2, Radio, RefreshCw, X } from "lucide-react";
-import Link from "next/link";
+import { BellRing, Radio, RefreshCw, X } from "lucide-react";
 import { useOrders } from "@/hooks/useOrders";
 import { useWebSocket } from "@/hooks/useWebSocket";
 import { OrderTicket } from "@/components/kds/OrderTicket";
 import { Button } from "@/components/ui/Button";
 import { ThemeToggle } from "@/components/chrome/ThemeToggle";
 import type { OrderStatus, WsEvent } from "@/lib/types";
+import { usePreferences } from "@/providers/PreferencesProvider";
+import { useAuthStore } from "@/store/auth-store";
+import { useRouter } from "next/navigation";
 
 const WAITER_STATUSES: OrderStatus[] = ["ready"];
 
@@ -19,6 +21,16 @@ interface WaiterCall {
 }
 
 export function WaiterBoard() {
+  const { t } = usePreferences();
+  const { user } = useAuthStore();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (user && user.role !== "waiter" && user.role !== "director") {
+      router.replace("/login/email");
+    }
+  }, [user, router]);
+
   const { orders, loading, error, connected, refresh, updateStatus } =
     useOrders(WAITER_STATUSES);
   const [busyId, setBusyId] = useState<string | null>(null);
@@ -64,7 +76,7 @@ export function WaiterBoard() {
               Waiter Station
             </p>
             <h1 className="font-[family-name:var(--font-display)] text-2xl text-[var(--ink)] md:text-3xl">
-              Ofitsiant ekrani
+              {t.waiterPanel}
             </h1>
           </div>
           <div className="flex items-center gap-2.5">
@@ -76,23 +88,17 @@ export function WaiterBoard() {
               }`}
             >
               <Radio className="size-3.5" />
-              {connected ? "Jonli" : "Ulanmagan"}
+              {connected ? t.realTime : t.offline}
             </span>
             <Button variant="secondary" size="sm" onClick={() => void refresh()}>
               <RefreshCw className="size-3.5" />
-              Yangilash
+              {t.update}
             </Button>
-            <Link
-              href="/director"
-              className="grid size-9 place-items-center rounded-xl border border-[var(--line)] bg-[var(--surface)]/60 text-[var(--muted)] transition hover:text-[var(--ink)]"
-              aria-label="Dashboard"
-            >
-              <Link2 className="size-4" />
-            </Link>
             <ThemeToggle />
           </div>
         </div>
       </header>
+
 
       <div className="px-4 py-5 md:px-6">
         {/* Waiter call alerts */}
@@ -107,10 +113,10 @@ export function WaiterBoard() {
                   <BellRing className="size-5 shrink-0 animate-pulse-soft" />
                   <div>
                     <p className="font-semibold text-[var(--ink)]">
-                      Stol {call.tableNumber} — ofitsiant chaqirildi
+                      {t.table} {call.tableNumber} — {t.waiterPanel}
                     </p>
                     <p className="text-sm text-[var(--muted)]">
-                      {call.reason ?? "Mijoz yordam so\u02BBradi"}
+                      {call.reason ?? "Mijoz yordam so'radi"}
                     </p>
                   </div>
                 </div>
@@ -135,7 +141,7 @@ export function WaiterBoard() {
 
         <div className="mb-4 flex items-center gap-3">
           <h2 className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--muted)]">
-            Yetkazishga tayyor
+            {t.ready}
           </h2>
           <span className="rounded-full bg-emerald-500/20 px-2.5 py-0.5 text-xs font-bold text-emerald-400">
             {orders.length}
@@ -164,8 +170,7 @@ export function WaiterBoard() {
             ))}
             {!orders.length && (
               <p className="col-span-full rounded-2xl border border-dashed border-[var(--line)]/50 px-4 py-16 text-center text-sm text-[var(--muted)]">
-                Tayyor buyurtmalar yo&apos;q. Oshxona tayyorlaganda shu yerda
-                chiqadi.
+                {t.noPreparingOrders}
               </p>
             )}
           </div>

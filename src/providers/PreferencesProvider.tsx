@@ -8,6 +8,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { translations } from "@/lib/translations";
 
 export type Theme = "light" | "dark";
 export type Language = "uz" | "ru" | "en";
@@ -17,6 +18,7 @@ type PreferencesContextValue = {
   setTheme: (next: Theme) => void;
   language: Language;
   setLanguage: (next: Language) => void;
+  t: typeof translations.uz;
 };
 
 const PreferencesContext = createContext<
@@ -71,7 +73,13 @@ export function PreferencesProvider({ children }: { children: ReactNode }) {
   }, [language]);
 
   const value = useMemo(
-    () => ({ theme, setTheme, language, setLanguage }),
+    () => ({
+      theme,
+      setTheme,
+      language,
+      setLanguage,
+      t: translations[language],
+    }),
     [theme, language],
   );
 

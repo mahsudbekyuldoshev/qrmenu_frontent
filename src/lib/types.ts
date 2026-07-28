@@ -36,18 +36,21 @@ export interface RegisterPayload {
 
 export interface Category {
   id: string;
-  name: string;
   nameUz: string;
+  nameRu: string;
+  nameEn: string;
   sortOrder: number;
 }
 
 export interface MenuItem {
   id: string;
   categoryId: string;
-  name: string;
   nameUz: string;
-  description: string;
+  nameRu: string;
+  nameEn: string;
   descriptionUz: string;
+  descriptionRu: string;
+  descriptionEn: string;
   price: number;
   imageUrl: string;
   isAvailable: boolean;

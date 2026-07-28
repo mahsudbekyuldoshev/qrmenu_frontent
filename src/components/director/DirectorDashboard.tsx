@@ -21,12 +21,25 @@ import { TopBar } from "@/components/chrome/TopBar";
 import { ThemeToggle } from "@/components/chrome/ThemeToggle";
 import { LanguageSelect } from "@/components/chrome/LanguageSelect";
 
+import { useAuthStore } from "@/store/auth-store";
+import { useRouter } from "next/navigation";
+import { usePreferences } from "@/providers/PreferencesProvider";
+
 export function DirectorDashboard() {
+  const { user } = useAuthStore();
+  const router = useRouter();
+  const { t } = usePreferences();
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [orders, setOrders] = useState<Order[]>([]);
   const [tables, setTables] = useState<TableStatus[]>([]);
   const [loading, setLoading] = useState(true);
   const [reloadToken, setReloadToken] = useState(0);
+
+  useEffect(() => {
+    if (user && user.role !== "director") {
+      router.replace(user.role === "kitchen" ? "/kds" : "/waiter");
+    }
+  }, [user, router]);
 
   useEffect(() => {
     let cancelled = false;
@@ -84,7 +97,7 @@ export function DirectorDashboard() {
               RestoFlow
             </p>
             <h1 className="font-[family-name:var(--font-display)] text-2xl leading-tight text-[var(--ink)]">
-              Direktor paneli
+              {t.directorPanel}
             </h1>
           </div>
         }
@@ -99,20 +112,8 @@ export function DirectorDashboard() {
               }`}
             >
               <Radio className="size-3.5" />
-              {connected ? "Real-time" : "Offline"}
+              {connected ? t.realTime : t.offline}
             </span>
-            <Link
-              href="/kds"
-              className="hidden sm:inline-flex items-center gap-1.5 text-sm font-medium text-[var(--muted)] transition hover:text-[var(--ink)]"
-            >
-              <ChefHat className="size-4" /> KDS
-            </Link>
-            <Link
-              href="/waiter"
-              className="hidden sm:inline-flex items-center gap-1.5 text-sm font-medium text-[var(--muted)] transition hover:text-[var(--ink)]"
-            >
-              <UtensilsCrossed className="size-4" /> Ofitsiant
-            </Link>
             <LanguageSelect />
             <ThemeToggle />
           </>

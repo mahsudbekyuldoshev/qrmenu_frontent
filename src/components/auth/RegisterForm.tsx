@@ -11,6 +11,8 @@ import { roleHomePath, useAuthStore } from "@/store/auth-store";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 
+import { usePreferences } from "@/providers/PreferencesProvider";
+
 const roles: { value: StaffRole; label: string; hint: string }[] = [
   { value: "director", label: "Direktor", hint: "Analytics" },
   { value: "waiter", label: "Ofitsiant", hint: "Stol oqimi" },
@@ -20,10 +22,10 @@ const roles: { value: StaffRole; label: string; hint: string }[] = [
 export function RegisterForm() {
   const router = useRouter();
   const setSession = useAuthStore((s) => s.setSession);
+  const { t } = usePreferences();
 
-  const [restaurantName, setRestaurantName] = useState("");
   const [fullName, setFullName] = useState("");
-  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [role, setRole] = useState<StaffRole>("director");
@@ -32,17 +34,25 @@ export function RegisterForm() {
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
 
+  // Phone masking: 90 065 60 09
+  function formatPhone(raw: string) {
+    const digits = raw.replace(/\D/g, "").slice(0, 9);
+    let res = "";
+    if (digits.length > 0) res += digits.slice(0, 2);
+    if (digits.length > 2) res += " " + digits.slice(2, 5);
+    if (digits.length > 5) res += " " + digits.slice(5, 7);
+    if (digits.length > 7) res += " " + digits.slice(7, 9);
+    return res;
+  }
+
   function validate(): boolean {
     const next: Record<string, string> = {};
-    if (!restaurantName.trim()) next.restaurantName = "Restoran nomini kiriting";
-    if (!fullName.trim()) next.fullName = "Ism-familiyani kiriting";
-    if (!email.trim()) next.email = "Emailni kiriting";
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
-      next.email = "Email formati noto‘g‘ri";
-    }
-    if (password.length < 6) next.password = "Kamida 6 ta belgi";
+    if (!fullName.trim()) next.fullName = t.fullName;
+    const cleanPhone = phone.replace(/\s/g, "");
+    if (cleanPhone.length < 9) next.phone = t.phone;
+    if (password.length < 6) next.password = "Min 6 chars";
     if (password !== confirmPassword) {
-      next.confirmPassword = "Parollar mos kelmadi";
+      next.confirmPassword = t.confirmPassword;
     }
     setFieldErrors(next);
     return Object.keys(next).length === 0;
@@ -55,18 +65,19 @@ export function RegisterForm() {
 
     setLoading(true);
     try {
+      const cleanPhone = phone.replace(/\s/g, "");
       const auth = await api.register({
-        email: email.trim(),
+        email: cleanPhone + "@restoflow.uz",
         password,
         fullName: fullName.trim(),
-        restaurantName: restaurantName.trim(),
+        restaurantName: "My Restaurant", // Defaulting since it was removed from UI
         role,
       });
       setSession(auth);
       router.push(roleHomePath(auth.user.role));
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : "Ro‘yxatdan o‘tish amalga oshmadi",
+        err instanceof Error ? err.message : t.register,
       );
     } finally {
       setLoading(false);
@@ -76,18 +87,7 @@ export function RegisterForm() {
   return (
     <form className="space-y-4" onSubmit={onSubmit} noValidate>
       <Input
-        label="Restoran nomi"
-        name="restaurantName"
-        autoComplete="organization"
-        placeholder="Masalan: Sofiya Cafe"
-        value={restaurantName}
-        onChange={(e) => setRestaurantName(e.target.value)}
-        error={fieldErrors.restaurantName}
-        required
-      />
-
-      <Input
-        label="Ism familiya"
+        label={t.fullName}
         name="fullName"
         autoComplete="name"
         placeholder="Aziza Karimova"
@@ -97,20 +97,33 @@ export function RegisterForm() {
         required
       />
 
-      <Input
-        label="Email"
-        name="email"
-        type="email"
-        autoComplete="email"
-        placeholder="you@example.com"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        error={fieldErrors.email}
-        required
-      />
+      <div className="space-y-1.5">
+        <label className="text-sm font-medium text-[var(--ink)]">
+          {t.phone}
+        </label>
+        <div className="relative flex items-center">
+          <span className="absolute left-3 text-sm font-medium text-[var(--muted)]">
+            +998
+          </span>
+          <input
+            type="tel"
+            className={cn(
+              "flex h-11 w-full rounded-xl border border-[var(--line)] bg-[var(--surface)] pl-14 pr-4 text-sm text-[var(--ink)] outline-none transition focus:border-[var(--accent-bright)]/50 focus:ring-4 focus:ring-[var(--accent-bright)]/10",
+              fieldErrors.phone && "border-red-500/50 focus:border-red-500/50 focus:ring-red-500/10"
+            )}
+            placeholder="90 000 00 00"
+            value={phone}
+            onChange={(e) => setPhone(formatPhone(e.target.value))}
+            required
+          />
+        </div>
+        {fieldErrors.phone && (
+          <p className="text-xs text-red-500">{fieldErrors.phone}</p>
+        )}
+      </div>
 
       <fieldset className="space-y-2">
-        <legend className="text-sm font-medium text-[var(--ink)]">Rol</legend>
+        <legend className="text-sm font-medium text-[var(--ink)]">{t.role}</legend>
         <div className="grid grid-cols-3 gap-2">
           {roles.map((item) => (
             <button
@@ -125,7 +138,7 @@ export function RegisterForm() {
               )}
             >
               <span className="block text-xs font-semibold sm:text-sm text-[var(--ink)]">
-                {item.label}
+                {item.value === 'director' ? t.director : item.value === 'kitchen' ? t.kitchen : t.waiter}
               </span>
               <span className="mt-0.5 hidden text-[10px] text-[var(--muted)] sm:block">
                 {item.hint}
@@ -136,11 +149,11 @@ export function RegisterForm() {
       </fieldset>
 
       <Input
-        label="Parol"
+        label={t.password}
         name="password"
         type={showPassword ? "text" : "password"}
         autoComplete="new-password"
-        placeholder="Kamida 6 ta belgi"
+        placeholder="••••••••"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
         error={fieldErrors.password}
@@ -158,11 +171,11 @@ export function RegisterForm() {
       />
 
       <Input
-        label="Parolni tasdiqlang"
+        label={t.confirmPassword}
         name="confirmPassword"
         type={showPassword ? "text" : "password"}
         autoComplete="new-password"
-        placeholder="Parolni qayta yozing"
+        placeholder="••••••••"
         value={confirmPassword}
         onChange={(e) => setConfirmPassword(e.target.value)}
         error={fieldErrors.confirmPassword}
@@ -182,10 +195,10 @@ export function RegisterForm() {
         {loading ? (
           <>
             <Loader2 className="size-4 animate-spin" />
-            Yaratilmoqda…
+            {t.creatingAccount}
           </>
         ) : (
-          "Hisob yaratish"
+          t.createAccount
         )}
       </Button>
     </form>
@@ -193,14 +206,15 @@ export function RegisterForm() {
 }
 
 export function RegisterFooter() {
+  const { t } = usePreferences();
   return (
     <>
-      Allaqachon hisobingiz bormi?{" "}
+      {t.haveAccount}{" "}
       <Link
         href="/login"
         className="font-medium text-[var(--accent-bright)] underline-offset-2 hover:underline"
       >
-        Kirish
+        {t.login}
       </Link>
     </>
   );

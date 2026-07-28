@@ -2,6 +2,7 @@
 
 import { cn } from "@/lib/utils";
 import type { Category } from "@/lib/types";
+import { usePreferences } from "@/providers/PreferencesProvider";
 
 export function CategoryTabs({
   categories,
@@ -12,10 +13,19 @@ export function CategoryTabs({
   activeId: string | "all";
   onChange: (id: string | "all") => void;
 }) {
+  const { t, language } = usePreferences();
+  
+  const getLabel = (c: Category) => {
+      if (language === 'ru') return c.nameRu;
+      if (language === 'en') return c.nameEn;
+      return c.nameUz;
+  }
+  
   const tabs: { id: string | "all"; label: string }[] = [
-    { id: "all", label: "Hammasi" },
-    ...categories.map((c) => ({ id: c.id, label: c.nameUz })),
+    { id: "all", label: t.all },
+    ...categories.map((c) => ({ id: c.id, label: getLabel(c) })),
   ];
+
 
   return (
     <div className="sticky top-[3.75rem] z-20 -mx-4 overflow-x-auto border-b border-[var(--line)] bg-[var(--bg)]/90 px-4 py-3 backdrop-blur-md">

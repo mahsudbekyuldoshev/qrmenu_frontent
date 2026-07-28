@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { LayoutGrid, List, Moon, Sun } from "lucide-react";
+import { LayoutGrid, List, Moon, Sun, ChevronLeft, ChevronRight } from "lucide-react";
 import { api } from "@/lib/api";
 import type { Category, MenuItem } from "@/lib/types";
 import { useCartStore } from "@/store/cart-store";
@@ -10,15 +10,19 @@ import { CategoryTabs } from "./CategoryTabs";
 import { MenuItemCard } from "./MenuItemCard";
 import { CartDrawer } from "./CartDrawer";
 import { RESTAURANT_NAME } from "@/lib/mock-data";
+import { Button } from "@/components/ui/Button";
 
 export function QrMenuView({ tableNumber }: { tableNumber: number }) {
   const [categories, setCategories] = useState<Category[]>([]);
   const [items, setItems] = useState<MenuItem[]>([]);
   const [activeCategory, setActiveCategory] = useState<string | "all">("all");
   const [loading, setLoading] = useState(true);
-  const [gridMode, setGridMode] = useState<"list" | "grid">("list");
+  const [gridMode, setGridMode] = useState<"list" | "grid">("grid"); // Default to grid
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 8;
+
   const setTable = useCartStore((s) => s.setTable);
-  const { theme, setTheme } = usePreferences();
+  const { theme, setTheme, t } = usePreferences();
 
   useEffect(() => {
     let cancelled = false;
@@ -49,10 +53,16 @@ export function QrMenuView({ tableNumber }: { tableNumber: number }) {
     return items.filter((i) => i.categoryId === activeCategory);
   }, [items, activeCategory]);
 
+  const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
+  const paginatedItems = useMemo(() => {
+    const start = (currentPage - 1) * ITEMS_PER_PAGE;
+    return filtered.slice(start, start + ITEMS_PER_PAGE);
+  }, [filtered, currentPage]);
+
   return (
-    <div className="menu-shell mx-auto min-h-dvh max-w-lg pb-28">
+    <div className="menu-shell mx-auto min-h-dvh max-w-7xl pb-28 px-4">
       {/* Sticky header */}
-      <header className="sticky top-0 z-30 border-b border-[var(--line)] bg-[var(--bg)]/90 px-4 py-3 backdrop-blur-md">
+      <header className="sticky top-0 z-30 border-b border-[var(--line)] bg-[var(--bg)]/90 px-4 py-3 backdrop-blur-md -mx-4 mb-6">
         <div className="flex items-center justify-between gap-3">
           <div className="min-w-0">
             <p className="text-[0.7rem] uppercase tracking-[0.22em] text-[var(--accent)]">
@@ -96,7 +106,7 @@ export function QrMenuView({ tableNumber }: { tableNumber: number }) {
             {/* Theme toggle */}
             <button
               type="button"
-              aria-label={theme === "dark" ? "Light mode" : "Dark mode"}
+              aria-label={theme === "dark" ? t.light : t.dark}
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
               className="grid size-9 place-items-center rounded-xl border border-[var(--line)] bg-[var(--surface)] text-[var(--ink)] transition hover:bg-[var(--surface-2)]"
             >
@@ -114,18 +124,21 @@ export function QrMenuView({ tableNumber }: { tableNumber: number }) {
         <CategoryTabs
           categories={categories}
           activeId={activeCategory}
-          onChange={setActiveCategory}
+          onChange={(id) => {
+              setActiveCategory(id);
+              setCurrentPage(1);
+          }}
         />
 
         {loading ? (
           <div
             className={
               gridMode === "grid"
-                ? "grid grid-cols-2 gap-3 py-6"
+                ? "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 py-6"
                 : "space-y-4 py-6"
             }
           >
-            {Array.from({ length: 6 }).map((_, i) => (
+            {Array.from({ length: 8 }).map((_, i) => (
               <div
                 key={i}
                 className={`animate-pulse rounded-2xl bg-[var(--surface)] ${
@@ -139,17 +152,27 @@ export function QrMenuView({ tableNumber }: { tableNumber: number }) {
             <p className="text-center text-sm">Bu kategoriyada taom yo&apos;q</p>
           </div>
         ) : (
+          <>
           <div
             className={`animate-fade-up ${
               gridMode === "grid"
-                ? "grid grid-cols-2 gap-3 py-4"
+                ? "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 py-4"
                 : "divide-y divide-[var(--line)]"
             }`}
           >
-            {filtered.map((item) => (
+            {paginatedItems.map((item) => (
               <MenuItemCard key={item.id} item={item} layout={gridMode} />
             ))}
           </div>
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="flex justify-center items-center gap-4 mt-8">
+                <Button variant="secondary" size="sm" onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1}>{t.pagination.prev}</Button>
+                <span className="text-sm font-medium">{currentPage} / {totalPages}</span>
+                <Button variant="secondary" size="sm" onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages}>{t.pagination.next}</Button>
+            </div>
+          )}
+          </>
         )}
       </div>
 

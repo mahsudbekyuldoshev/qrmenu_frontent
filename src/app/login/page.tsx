@@ -61,8 +61,11 @@ const roles = [
   },
 ];
 
+import { usePreferences } from "@/providers/PreferencesProvider";
+
 export default function RoleSelectPage() {
   const router = useRouter();
+  const { t } = usePreferences();
 
   return (
     <main className="hub-shell relative min-h-dvh overflow-hidden">
@@ -99,28 +102,19 @@ export default function RoleSelectPage() {
         <div className="mb-10 text-center">
           <p className="animate-fade-up inline-flex items-center gap-2 rounded-full border border-[var(--accent)]/30 bg-[var(--accent)]/10 px-4 py-1.5 text-xs font-medium uppercase tracking-[0.2em] text-[var(--accent-bright)]">
             <LogIn className="size-3.5" />
-            Rolni tanlang
+            {t.selectRole}
           </p>
           <h1
             className="animate-fade-up mt-4 font-[family-name:var(--font-display)] text-4xl tracking-tight text-[var(--ink)] md:text-5xl"
             style={{ animationDelay: "60ms" }}
           >
-            Qaysi panelga kirasiz?
+            {t.selectRole}?
           </h1>
           <p
             className="animate-fade-up mt-3 text-sm leading-relaxed text-[var(--muted)]"
             style={{ animationDelay: "100ms" }}
           >
-            Rolni tanlang — tizim siz uchun mos ekranni ochadi.
-            <br />
-            Email/parol bilan kirish uchun{" "}
-            <Link
-              href="/login/email"
-              className="text-[var(--accent-bright)] underline-offset-2 hover:underline"
-            >
-              bu yerga bosing
-            </Link>
-            .
+            {t.loginSubtitle}
           </p>
         </div>
 
@@ -133,7 +127,10 @@ export default function RoleSelectPage() {
             <button
               key={role.id}
               type="button"
-              onClick={() => router.push(role.href)}
+              onClick={() => {
+                if (role.id === "menu") router.push(role.href);
+                else router.push(`/login/email?role=${role.id}`);
+              }}
               className={`group relative flex items-start gap-4 overflow-hidden rounded-2xl border border-[var(--line)] bg-gradient-to-br ${role.color} p-5 text-left backdrop-blur-sm transition duration-300 ${role.hoverBorder} hover:-translate-y-0.5 hover:shadow-[0_8px_32px_-12px_rgba(0,0,0,0.25)] active:scale-[0.98]`}
               style={{ animationDelay: `${160 + idx * 40}ms` }}
             >
@@ -144,7 +141,7 @@ export default function RoleSelectPage() {
               </div>
               <div className="flex-1 min-w-0">
                 <h2 className="font-[family-name:var(--font-display)] text-lg text-[var(--ink)]">
-                  {role.label}
+                  {role.id === 'director' ? t.director : role.id === 'kds' ? t.kitchen : role.id === 'waiter' ? t.waiter : t.menu}
                 </h2>
                 <p className="mt-1 text-sm leading-relaxed text-[var(--muted)]">
                   {role.desc}
@@ -154,21 +151,6 @@ export default function RoleSelectPage() {
             </button>
           ))}
         </div>
-
-        {/* Footer note */}
-        <p
-          className="animate-fade-up mt-8 text-center text-sm text-[var(--muted)]"
-          style={{ animationDelay: "340ms" }}
-        >
-          Demo akkauntlar:{" "}
-          <code className="rounded bg-[var(--surface)] px-1.5 py-0.5 text-xs text-[var(--ink)]">
-            director@restoflow.uz
-          </code>{" "}
-          /{" "}
-          <code className="rounded bg-[var(--surface)] px-1.5 py-0.5 text-xs text-[var(--ink)]">
-            demo1234
-          </code>
-        </p>
       </div>
     </main>
   );

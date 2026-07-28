@@ -1,20 +1,34 @@
 "use client";
 
-import { useState } from "react";
-import { Link2, Radio, RefreshCw } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Link2, Radio, RefreshCw, Plus, Edit2, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useOrders } from "@/hooks/useOrders";
 import { OrderTicket } from "./OrderTicket";
 import { Button } from "@/components/ui/Button";
 import { ThemeToggle } from "@/components/chrome/ThemeToggle";
-import type { OrderStatus } from "@/lib/types";
+import type { OrderStatus, MenuItem } from "@/lib/types";
+import { usePreferences } from "@/providers/PreferencesProvider";
+import { useAuthStore } from "@/store/auth-store";
+import { api } from "@/lib/api";
 
 const KITCHEN_STATUSES: OrderStatus[] = ["pending", "preparing"];
 
 export function KdsBoard() {
+  const { t } = usePreferences();
+  const { user } = useAuthStore();
   const { orders, loading, error, connected, refresh, updateStatus } =
     useOrders(KITCHEN_STATUSES);
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
+  const [menuLoading, setMenuLoading] = useState(true);
+
+  useEffect(() => {
+    api.getMenu().then(items => {
+        setMenuItems(items);
+        setMenuLoading(false);
+    });
+  }, []);
 
   const pending = orders.filter((o) => o.status === "pending");
   const preparing = orders.filter((o) => o.status === "preparing");
@@ -38,7 +52,7 @@ export function KdsBoard() {
               Kitchen Display
             </p>
             <h1 className="font-[family-name:var(--font-display)] text-2xl text-[var(--ink)] md:text-3xl">
-              Oshxona ekrani
+              {t.kdsPanel}
             </h1>
           </div>
           <div className="flex items-center gap-2.5">
@@ -50,25 +64,52 @@ export function KdsBoard() {
               }`}
             >
               <Radio className="size-3.5" />
-              {connected ? "Jonli" : "Ulanmagan"}
+              {connected ? t.realTime : t.offline}
             </span>
             <Button variant="secondary" size="sm" onClick={() => void refresh()}>
               <RefreshCw className="size-3.5" />
-              Yangilash
+              {t.update}
             </Button>
-            <Link
-              href="/director"
-              className="grid size-9 place-items-center rounded-xl border border-[var(--line)] bg-[var(--surface)]/60 text-[var(--muted)] transition hover:text-[var(--ink)]"
-              aria-label="Dashboard"
-            >
-              <Link2 className="size-4" />
-            </Link>
+            {user?.role === "director" && (
+              <Link
+                href="/director"
+                className="grid size-9 place-items-center rounded-xl border border-[var(--line)] bg-[var(--surface)]/60 text-[var(--muted)] transition hover:text-[var(--ink)]"
+                aria-label="Dashboard"
+              >
+                <Link2 className="size-4" />
+              </Link>
+            )}
             <ThemeToggle />
           </div>
         </div>
       </header>
 
       <div className="px-4 py-5 md:px-6">
+        {/* Menu Management Section */}
+        {(user?.role === 'director' || user?.role === 'kitchen') && (
+            <section className="mb-10 rounded-2xl border border-[var(--line)] bg-[var(--surface)]/50 p-6">
+                <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-lg font-semibold text-[var(--ink)]">{t.menu}</h2>
+                    <Button size="sm"><Plus className="size-4 mr-2" /> {t.addDish}</Button>
+                </div>
+                {menuLoading ? (
+                  <p className="text-sm text-[var(--muted)]">Loading...</p>
+                ) : (
+                  <div className="grid gap-2">
+                      {menuItems.map(item => (
+                          <div key={item.id} className="flex items-center justify-between p-3 rounded-lg bg-[var(--bg)] border border-[var(--line)]">
+                              <span className="text-sm font-medium text-[var(--ink)]">{item.name}</span>
+                              <div className="flex gap-2">
+                                  <Button variant="secondary" size="sm"><Edit2 className="size-4" /></Button>
+                                  <Button variant="secondary" size="sm" className="text-rose-500"><Trash2 className="size-4" /></Button>
+                              </div>
+                          </div>
+                      ))}
+                  </div>
+                )}
+            </section>
+        )}
+
         {error && (
           <p className="mb-4 rounded-xl border border-rose-500/30 bg-rose-500/10 px-4 py-3 text-sm text-rose-400">
             {error}
@@ -90,7 +131,7 @@ export function KdsBoard() {
             <section>
               <div className="mb-4 flex items-center gap-3">
                 <h2 className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--muted)]">
-                  Yangi buyurtmalar
+                  {t.newOrders}
                 </h2>
                 <span className="rounded-full bg-amber-500/20 px-2.5 py-0.5 text-xs font-bold text-amber-400">
                   {pending.length}
@@ -110,7 +151,7 @@ export function KdsBoard() {
                 ))}
                 {!pending.length && (
                   <p className="col-span-full rounded-2xl border border-dashed border-[var(--line)]/50 px-4 py-12 text-center text-sm text-[var(--muted)]">
-                    Yangi buyurtma yo&apos;q
+                    {t.noNewOrders}
                   </p>
                 )}
               </div>
@@ -120,7 +161,7 @@ export function KdsBoard() {
             <section>
               <div className="mb-4 flex items-center gap-3">
                 <h2 className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--muted)]">
-                  Tayyorlanmoqda
+                  {t.preparing}
                 </h2>
                 <span className="rounded-full bg-blue-500/20 px-2.5 py-0.5 text-xs font-bold text-blue-400">
                   {preparing.length}
@@ -140,7 +181,7 @@ export function KdsBoard() {
                 ))}
                 {!preparing.length && (
                   <p className="col-span-full rounded-2xl border border-dashed border-[var(--line)]/50 px-4 py-12 text-center text-sm text-[var(--muted)]">
-                    Tayyorlanayotgan buyurtma yo&apos;q
+                    {t.noPreparingOrders}
                   </p>
                 )}
               </div>

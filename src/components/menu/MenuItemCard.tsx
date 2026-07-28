@@ -6,6 +6,7 @@ import type { MenuItem } from "@/lib/types";
 import { formatMoney } from "@/lib/utils";
 import { useCartStore } from "@/store/cart-store";
 import { Button } from "@/components/ui/Button";
+import { usePreferences } from "@/providers/PreferencesProvider";
 
 interface MenuItemCardProps {
   item: MenuItem;
@@ -13,11 +14,15 @@ interface MenuItemCardProps {
 }
 
 export function MenuItemCard({ item, layout = "list" }: MenuItemCardProps) {
+  const { language } = usePreferences();
   const cartItem = useCartStore((s) =>
     s.items.find((i) => i.menuItemId === item.id),
   );
   const addItem = useCartStore((s) => s.addItem);
   const setQuantity = useCartStore((s) => s.setQuantity);
+
+  const name = language === 'ru' ? item.nameRu : language === 'en' ? item.nameEn : item.nameUz;
+  const description = language === 'ru' ? item.descriptionRu : language === 'en' ? item.descriptionEn : item.descriptionUz;
 
   if (layout === "grid") {
     return (
@@ -26,7 +31,7 @@ export function MenuItemCard({ item, layout = "list" }: MenuItemCardProps) {
         <div className="relative aspect-[4/3] overflow-hidden bg-[var(--surface-2)]">
           <Image
             src={item.imageUrl}
-            alt={item.nameUz}
+            alt={name}
             fill
             sizes="(max-width: 640px) 50vw, 200px"
             className="object-cover transition duration-500 group-hover:scale-105"
@@ -43,11 +48,11 @@ export function MenuItemCard({ item, layout = "list" }: MenuItemCardProps) {
         {/* Content */}
         <div className="flex flex-1 flex-col p-3">
           <h3 className="font-[family-name:var(--font-display)] text-sm leading-tight text-[var(--ink)] line-clamp-2">
-            {item.nameUz}
+            {name}
           </h3>
-          {item.descriptionUz && (
+          {description && (
             <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-[var(--muted)]">
-              {item.descriptionUz}
+              {description}
             </p>
           )}
           <div className="mt-auto flex items-center justify-between gap-2 pt-3">
@@ -60,7 +65,7 @@ export function MenuItemCard({ item, layout = "list" }: MenuItemCardProps) {
                 disabled={!item.isAvailable}
                 onClick={() => addItem(item)}
                 className="grid size-8 place-items-center rounded-xl bg-[var(--accent)] text-[var(--accent-fg)] transition hover:brightness-110 active:scale-95 disabled:opacity-40"
-                aria-label={`${item.nameUz} qo'shish`}
+                aria-label={`${name} qo'shish`}
               >
                 <Plus className="size-4" />
               </button>
@@ -98,11 +103,11 @@ export function MenuItemCard({ item, layout = "list" }: MenuItemCardProps) {
     <article className="group grid grid-cols-[1fr_7.5rem] gap-4 py-4 last:border-0">
       <div className="flex min-w-0 flex-col">
         <h3 className="font-[family-name:var(--font-display)] text-lg leading-tight text-[var(--ink)]">
-          {item.nameUz}
+          {name}
         </h3>
-        {item.descriptionUz && (
+        {description && (
           <p className="mt-1 line-clamp-2 text-sm leading-relaxed text-[var(--muted)]">
-            {item.descriptionUz}
+            {description}
           </p>
         )}
         {item.prepTimeMinutes > 0 && (
@@ -157,7 +162,7 @@ export function MenuItemCard({ item, layout = "list" }: MenuItemCardProps) {
         )}
         <Image
           src={item.imageUrl}
-          alt={item.nameUz}
+          alt={name}
           fill
           sizes="120px"
           className="object-cover transition duration-500 group-hover:scale-105"
