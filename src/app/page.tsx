@@ -42,45 +42,6 @@ const features = [
 export default function HomePage() {
   const { t } = usePreferences();
 
-  const links = [
-    {
-      href: "/menu/5",
-      title: "QR-Menu",
-      desc: t.customer,
-      icon: QrCode,
-      badge: "Live",
-      color: "from-teal-500/20 to-emerald-500/10",
-      borderHover: "hover:border-teal-400/40",
-    },
-    {
-      href: "/kds",
-      title: "KDS",
-      desc: t.kitchen,
-      icon: ChefHat,
-      badge: "Kitchen",
-      color: "from-orange-500/15 to-amber-500/10",
-      borderHover: "hover:border-orange-400/40",
-    },
-    {
-      href: "/waiter",
-      title: t.waiter,
-      desc: t.waiter,
-      icon: UtensilsCrossed,
-      badge: "Station",
-      color: "from-blue-500/15 to-indigo-500/10",
-      borderHover: "hover:border-blue-400/40",
-    },
-    {
-      href: "/director",
-      title: t.director,
-      desc: t.director,
-      icon: LayoutDashboard,
-      badge: "Dashboard",
-      color: "from-purple-500/15 to-violet-500/10",
-      borderHover: "hover:border-purple-400/40",
-    },
-  ];
-
   return (
     <main className="hub-shell relative min-h-dvh overflow-hidden">
       {/* Background image overlay */}
@@ -118,9 +79,15 @@ export default function HomePage() {
           <>
             <Link
               href="/login"
-              className="text-sm font-medium text-[var(--muted)] transition hover:text-[var(--ink)]"
+              className="rounded-xl px-4 py-2 text-sm font-semibold text-[var(--accent-fg)] bg-[var(--accent)] transition hover:brightness-110"
             >
               {t.login}
+            </Link>
+            <Link
+              href="/register"
+              className="text-sm font-medium text-[var(--muted)] transition hover:text-[var(--ink)]"
+            >
+              {t.register}
             </Link>
             <LanguageSelect />
             <ThemeToggle />
@@ -156,51 +123,7 @@ export default function HomePage() {
             className="animate-fade-up mt-8 flex flex-wrap items-center justify-center gap-3"
             style={{ animationDelay: "180ms" }}
           >
-            <Link
-              href="/login"
-              className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-[var(--accent)] px-6 text-sm font-semibold text-[var(--accent-fg)] shadow-[0_8px_24px_-12px_rgba(15,118,110,0.65)] transition hover:brightness-110 active:scale-[0.98]"
-            >
-              {t.login} <ArrowRight className="size-4" />
-            </Link>
-            <Link
-              href="/register"
-              className="inline-flex h-12 items-center justify-center rounded-xl border border-[var(--line)] bg-[var(--surface)]/60 px-6 text-sm font-medium text-[var(--ink)] backdrop-blur-sm transition hover:border-[var(--accent-bright)]/40 hover:bg-[var(--surface)]"
-            >
-              {t.register}
-            </Link>
           </div>
-        </div>
-
-        {/* Role cards grid */}
-        <div
-          className="animate-fade-up mt-16 grid gap-4 sm:grid-cols-2"
-          style={{ animationDelay: "220ms" }}
-        >
-          {links.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className={`group relative flex items-start justify-between gap-4 overflow-hidden rounded-2xl border border-[var(--line)] bg-gradient-to-br ${link.color} p-6 backdrop-blur-sm transition duration-300 ${link.borderHover} hover:shadow-[0_8px_32px_-12px_rgba(0,0,0,0.25)] hover:-translate-y-0.5`}
-            >
-              <div className="flex-1 min-w-0">
-                <div className="mb-4 flex items-center gap-3">
-                  <div className="flex size-11 items-center justify-center rounded-xl bg-[var(--surface)]/80 text-[var(--accent)] ring-1 ring-[var(--line)]">
-                    <link.icon className="size-5" />
-                  </div>
-                  <span className="rounded-full border border-[var(--line)] bg-[var(--surface)]/60 px-2.5 py-0.5 text-xs font-medium text-[var(--muted)]">
-                    {link.badge}
-                  </span>
-                </div>
-                <h2 className="font-[family-name:var(--font-display)] text-xl text-[var(--ink)]">
-                  {link.title}
-                </h2>
-                <p className="mt-1.5 text-sm leading-relaxed text-[var(--muted)]">
-                  {link.desc}
-                </p>
-              </div>
-              <ArrowRight className="mt-1 size-5 shrink-0 text-[var(--muted)]/50 transition duration-300 group-hover:translate-x-1 group-hover:text-[var(--accent)]" />
-            </Link>
-          ))}
         </div>
 
         {/* Features section */}

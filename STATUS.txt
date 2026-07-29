@@ -1,0 +1,58 @@
+RestoFlow Frontend — qilingan ishlar va keyingi qadamlar
+==========================================================
+Sana: 2026-07-29
+
+
+1. QILINGAN ISHLAR (2026-07-29 yangilanishi)
+--------------------------------------------
+
+1.1. Rollar tizimi va Auth
+    - `StaffRole` ga 'manager' va 'super-admin' qo'shildi.
+    - Login/Register oqimi soddalashtirildi (rol tanlash olib tashlandi).
+    - Demo akkauntlar barcha rollar uchun yangilandi (telefon formatida).
+    - Har bir dashboardga Logout tugmasi qo'shildi (redirect /login ga).
+
+1.2. Dashboardlar
+    - Manager Dashboard yaratildi (menyuni boshqarish va fon rasmi sozlash).
+    - Super Admin Dashboard yaratildi (sidebar navigatsiyasi, restoranlar/direktorlar CRUD).
+
+1.3. UI / UX
+    - Bosh sahifa (landing page) tozalandi (kartochkalar olib tashlandi).
+    - Bosh sahifa navbariga 'Kirish' va 'Ro'yxatdan o'tish' qo'shildi.
+    - Mijoz menyusi (/menu/:id) ga atmosferali fon rasmi qo'shildi.
+    - KDS panelidan menyuni boshqarish bo'limi to'liq olib tashlandi.
+    - Barcha dashboardlarga til va mavzu (Light/Dark) nazoratlari qo'shildi.
+
+
+2. YARATILGAN / O‘ZGARTIRILGAN FAYLLAR
+--------------------------------------
+
+Yangi:
+    src/app/manager/page.tsx
+    src/components/manager/ManagerDashboard.tsx
+    src/app/super-admin/page.tsx
+    src/components/super-admin/SuperAdminDashboard.tsx
+
+O‘zgartirilgan:
+    src/lib/types.ts
+    src/store/auth-store.ts
+    src/components/auth/RegisterForm.tsx
+    src/components/auth/LoginForm.tsx
+    src/app/page.tsx
+    src/app/login/page.tsx
+    src/components/kds/KdsBoard.tsx
+    src/components/menu/QrMenuView.tsx
+    src/components/waiter/WaiterBoard.tsx
+    src/components/director/DirectorDashboard.tsx
+    src/lib/api.ts (mock akkauntlar)
+
+
+
+   15     { label: "Direktor", phone: "901234567" },
+      16     { label: "Oshxona", phone: "907654321" },
+      17     { label: "Ofitsiant", phone: "900001122" },
+      18 +   { label: "Manager", phone: "901112233" },
+      19 +   { label: "Super Admin", phone: "909998877" },
+      20   ];
+      21
+parol demo1234

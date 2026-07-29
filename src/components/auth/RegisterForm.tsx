@@ -14,9 +14,10 @@ import { Input } from "@/components/ui/Input";
 import { usePreferences } from "@/providers/PreferencesProvider";
 
 const roles: { value: StaffRole; label: string; hint: string }[] = [
-  { value: "director", label: "Direktor", hint: "Analytics" },
   { value: "waiter", label: "Ofitsiant", hint: "Stol oqimi" },
   { value: "kitchen", label: "Oshxona", hint: "KDS" },
+  { value: "manager", label: "Manager", hint: "Boshqaruv" },
+  { value: "super-admin", label: "Super Admin", hint: "Platforma" },
 ];
 
 export function RegisterForm() {
@@ -28,7 +29,7 @@ export function RegisterForm() {
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [role, setRole] = useState<StaffRole>("director");
+  const [role, setRole] = useState<StaffRole>("waiter");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
@@ -138,7 +139,7 @@ export function RegisterForm() {
               )}
             >
               <span className="block text-xs font-semibold sm:text-sm text-[var(--ink)]">
-                {item.value === 'director' ? t.director : item.value === 'kitchen' ? t.kitchen : t.waiter}
+                {item.value === 'kitchen' ? t.kitchen : item.value === 'waiter' ? t.waiter : item.label}
               </span>
               <span className="mt-0.5 hidden text-[10px] text-[var(--muted)] sm:block">
                 {item.hint}

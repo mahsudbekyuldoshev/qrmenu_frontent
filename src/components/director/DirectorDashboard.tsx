@@ -11,6 +11,7 @@ import {
   Radio,
   TrendingUp,
   UtensilsCrossed,
+  LogOut,
 } from "lucide-react";
 import { api } from "@/lib/api";
 import { useWebSocket } from "@/hooks/useWebSocket";
@@ -116,6 +117,12 @@ export function DirectorDashboard() {
             </span>
             <LanguageSelect />
             <ThemeToggle />
+            <button onClick={() => {
+                useAuthStore.getState().logout();
+                router.push("/login");
+            }} className="p-2 text-[var(--muted)] hover:text-rose-500">
+                <LogOut className="size-4" />
+            </button>
           </>
         }
       />

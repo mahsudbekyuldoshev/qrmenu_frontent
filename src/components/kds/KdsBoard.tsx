@@ -1,34 +1,23 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Link2, Radio, RefreshCw, Plus, Edit2, Trash2 } from "lucide-react";
+import { Radio, RefreshCw, LogOut } from "lucide-react";
 import Link from "next/link";
 import { useOrders } from "@/hooks/useOrders";
 import { OrderTicket } from "./OrderTicket";
 import { Button } from "@/components/ui/Button";
 import { ThemeToggle } from "@/components/chrome/ThemeToggle";
-import type { OrderStatus, MenuItem } from "@/lib/types";
+import type { OrderStatus } from "@/lib/types";
 import { usePreferences } from "@/providers/PreferencesProvider";
 import { useAuthStore } from "@/store/auth-store";
-import { api } from "@/lib/api";
 
 const KITCHEN_STATUSES: OrderStatus[] = ["pending", "preparing"];
 
 export function KdsBoard() {
   const { t } = usePreferences();
-  const { user } = useAuthStore();
   const { orders, loading, error, connected, refresh, updateStatus } =
     useOrders(KITCHEN_STATUSES);
   const [busyId, setBusyId] = useState<string | null>(null);
-  const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
-  const [menuLoading, setMenuLoading] = useState(true);
-
-  useEffect(() => {
-    api.getMenu().then(items => {
-        setMenuItems(items);
-        setMenuLoading(false);
-    });
-  }, []);
 
   const pending = orders.filter((o) => o.status === "pending");
   const preparing = orders.filter((o) => o.status === "preparing");
@@ -70,45 +59,18 @@ export function KdsBoard() {
               <RefreshCw className="size-3.5" />
               {t.update}
             </Button>
-            {user?.role === "director" && (
-              <Link
-                href="/director"
-                className="grid size-9 place-items-center rounded-xl border border-[var(--line)] bg-[var(--surface)]/60 text-[var(--muted)] transition hover:text-[var(--ink)]"
-                aria-label="Dashboard"
-              >
-                <Link2 className="size-4" />
-              </Link>
-            )}
             <ThemeToggle />
+            <button onClick={() => {
+                useAuthStore.getState().logout();
+                window.location.href = "/login";
+            }} className="p-2 text-[var(--muted)] hover:text-rose-500">
+                <LogOut className="size-4" />
+            </button>
           </div>
         </div>
       </header>
 
       <div className="px-4 py-5 md:px-6">
-        {/* Menu Management Section */}
-        {(user?.role === 'director' || user?.role === 'kitchen') && (
-            <section className="mb-10 rounded-2xl border border-[var(--line)] bg-[var(--surface)]/50 p-6">
-                <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-lg font-semibold text-[var(--ink)]">{t.menu}</h2>
-                    <Button size="sm"><Plus className="size-4 mr-2" /> {t.addDish}</Button>
-                </div>
-                {menuLoading ? (
-                  <p className="text-sm text-[var(--muted)]">Loading...</p>
-                ) : (
-                  <div className="grid gap-2">
-                      {menuItems.map(item => (
-                          <div key={item.id} className="flex items-center justify-between p-3 rounded-lg bg-[var(--bg)] border border-[var(--line)]">
-                              <span className="text-sm font-medium text-[var(--ink)]">{item.name}</span>
-                              <div className="flex gap-2">
-                                  <Button variant="secondary" size="sm"><Edit2 className="size-4" /></Button>
-                                  <Button variant="secondary" size="sm" className="text-rose-500"><Trash2 className="size-4" /></Button>
-                              </div>
-                          </div>
-                      ))}
-                  </div>
-                )}
-            </section>
-        )}
 
         {error && (
           <p className="mb-4 rounded-xl border border-rose-500/30 bg-rose-500/10 px-4 py-3 text-sm text-rose-400">

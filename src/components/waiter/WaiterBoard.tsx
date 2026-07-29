@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { BellRing, Radio, RefreshCw, X } from "lucide-react";
+import { BellRing, Radio, RefreshCw, X, LogOut } from "lucide-react";
 import { useOrders } from "@/hooks/useOrders";
 import { useWebSocket } from "@/hooks/useWebSocket";
 import { OrderTicket } from "@/components/kds/OrderTicket";
@@ -27,7 +27,7 @@ export function WaiterBoard() {
 
   useEffect(() => {
     if (user && user.role !== "waiter" && user.role !== "director") {
-      router.replace("/login/email");
+      router.replace("/login");
     }
   }, [user, router]);
 
@@ -95,6 +95,12 @@ export function WaiterBoard() {
               {t.update}
             </Button>
             <ThemeToggle />
+            <button onClick={() => {
+                useAuthStore.getState().logout();
+                router.push("/login");
+            }} className="p-2 text-[var(--muted)] hover:text-rose-500">
+                <LogOut className="size-4" />
+            </button>
           </div>
         </div>
       </header>

@@ -5,7 +5,7 @@ export type OrderStatus =
   | "delivered"
   | "cancelled";
 
-export type StaffRole = "kitchen" | "waiter" | "director";
+export type StaffRole = "kitchen" | "waiter" | "director" | "manager" | "super-admin";
 
 export interface User {
   id: string;

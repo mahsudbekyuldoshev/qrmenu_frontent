@@ -60,7 +60,24 @@ export function QrMenuView({ tableNumber }: { tableNumber: number }) {
   }, [filtered, currentPage]);
 
   return (
-    <div className="menu-shell mx-auto min-h-dvh max-w-7xl pb-28 px-4">
+    <div className="menu-shell relative mx-auto min-h-dvh max-w-7xl pb-28 px-4 overflow-hidden">
+      {/* Background elements */}
+      <div
+        aria-hidden
+        className="fixed inset-0 pointer-events-none -z-10"
+        style={{
+          backgroundImage: "url(https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=1200&q=80)",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          opacity: 0.1,
+          filter: "blur(40px) saturate(1.2)",
+        }}
+      />
+      <div
+        aria-hidden
+        className="fixed inset-0 pointer-events-none -z-10 bg-gradient-to-br from-[var(--bg)] via-[var(--bg)]/95 to-[var(--accent)]/5"
+      />
+
       {/* Sticky header */}
       <header className="sticky top-0 z-30 border-b border-[var(--line)] bg-[var(--bg)]/90 px-4 py-3 backdrop-blur-md -mx-4 mb-6">
         <div className="flex items-center justify-between gap-3">

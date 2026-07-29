@@ -15,6 +15,8 @@ const demoAccounts = [
   { label: "Direktor", phone: "901234567" },
   { label: "Oshxona", phone: "907654321" },
   { label: "Ofitsiant", phone: "900001122" },
+  { label: "Manager", phone: "901112233" },
+  { label: "Super Admin", phone: "909998877" },
 ];
 
 export function LoginForm() {

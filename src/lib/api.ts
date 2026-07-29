@@ -31,7 +31,7 @@ type MockAccount = User & { password: string };
 const mockAccounts: MockAccount[] = [
   {
     id: "usr_demo_dir",
-    email: "director@restoflow.uz",
+    email: "901234567@restoflow.uz",
     password: "demo1234",
     fullName: "Aziza Karimova",
     restaurantName: "RestoFlow Demo",
@@ -39,7 +39,7 @@ const mockAccounts: MockAccount[] = [
   },
   {
     id: "usr_demo_kit",
-    email: "kitchen@restoflow.uz",
+    email: "907654321@restoflow.uz",
     password: "demo1234",
     fullName: "Jasur Aliyev",
     restaurantName: "RestoFlow Demo",
@@ -47,11 +47,27 @@ const mockAccounts: MockAccount[] = [
   },
   {
     id: "usr_demo_wai",
-    email: "waiter@restoflow.uz",
+    email: "900001122@restoflow.uz",
     password: "demo1234",
     fullName: "Madina Yusupova",
     restaurantName: "RestoFlow Demo",
     role: "waiter",
+  },
+  {
+    id: "usr_demo_man",
+    email: "901112233@restoflow.uz",
+    password: "demo1234",
+    fullName: "Manager User",
+    restaurantName: "RestoFlow Demo",
+    role: "manager",
+  },
+  {
+    id: "usr_demo_sa",
+    email: "909998877@restoflow.uz",
+    password: "demo1234",
+    fullName: "Super Admin",
+    restaurantName: "RestoFlow Demo",
+    role: "super-admin",
   },
 ];
 

@@ -46,6 +46,10 @@ export function roleHomePath(role: User["role"]): string {
       return "/kds";
     case "waiter":
       return "/waiter";
+    case "manager":
+      return "/manager";
+    case "super-admin":
+      return "/super-admin";
     case "director":
     default:
       return "/director";
