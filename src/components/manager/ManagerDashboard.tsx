@@ -52,11 +52,12 @@ export function ManagerDashboard() {
             imageUrl: dish.imageUrl || ""
         } : item));
     } else {
+        const dish = editingDish as any;
         const newDish: MenuItem = {
             id: Date.now().toString(),
             nameUz: nameInput.value,
             price: Number(priceInput.value),
-            imageUrl: editingDish?.imageUrl || "",
+            imageUrl: dish?.imageUrl || "",
             categoryId: catSelect.value,
             descriptionUz: descInput.value,
             nameRu: "",
