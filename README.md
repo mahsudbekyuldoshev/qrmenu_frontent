@@ -18,13 +18,6 @@ RestoFlow — restoranlar uchun zamonaviy va ixcham boshqaruv tizimi. Loyiha res
 - **Ofitsiant va Oshxona (KDS) panellari:** Buyurtmalarni real vaqt rejimida qabul qilish va kuzatish.
 - **Ko'p tillilik (i18n):** UZ, RU, EN tillarini to'liq qo'llab-quvvatlash.
 
-## O'rnatish va Ishga tushirish
-
-1. **Loyihani klonlash:**
-   ```bash
-   git clone <repo-url>
-   cd qrmenu_frontent
-   ```
 
 2. **Bog'liqliklarni o'rnatish:**
    ```bash

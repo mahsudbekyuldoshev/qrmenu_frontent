@@ -42,13 +42,14 @@ export function ManagerDashboard() {
     const catSelect = document.querySelector('select[name="category"]') as HTMLSelectElement;
 
     if (editingDish) {
-        setMenuItems(prev => prev.map(item => item.id === editingDish.id ? {
+        const dish = editingDish as any;
+        setMenuItems(prev => prev.map(item => item.id === dish.id ? {
             ...item,
             nameUz: nameInput.value,
             price: Number(priceInput.value),
             descriptionUz: descInput.value,
             categoryId: catSelect.value,
-            imageUrl: (editingDish as any)?.imageUrl || ""
+            imageUrl: dish.imageUrl || ""
         } : item));
     } else {
         const newDish: MenuItem = {
