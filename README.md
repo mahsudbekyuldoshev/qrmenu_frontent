@@ -1,111 +1,46 @@
 # RestoFlow Frontend
 
-Next.js (App Router) + TypeScript + Tailwind CSS frontend for **RestoFlow** — SaaS restaurant QR-Menu, KDS, waiter station, and director dashboard.
+RestoFlow — restoranlar uchun zamonaviy va ixcham boshqaruv tizimi. Loyiha restoran egalari, menejerlar va xodimlar uchun qulay interfeyslarni taqdim etadi.
 
-## Quick start
+## Texnologiyalar
+*   **Framework:** Next.js (React)
+*   **Til:** TypeScript
+*   **Styling:** Tailwind CSS
+*   **State Management:** Zustand
+*   **Charts:** Recharts
+*   **Forms & Validation:** react-hook-form, yup
+*   **Map:** react-leaflet
 
-```bash
-npm install
-npm run dev
-```
+## Asosiy Imkoniyatlar
+- **Super Admin Panel:** Restoranlar va direktorlarni boshqarish, interaktiv xarita orqali joylashuvni belgilash.
+- **Direktor Dashboard:** Analitika (grafiklar), menejerlar, ofitsiantlar va oshpazlar ro'yxatini boshqarish.
+- **Manager Panel:** Taomlar menyusini boshqarish (CRUD), rasm yuklash va menyu dizaynini sozlash.
+- **Ofitsiant va Oshxona (KDS) panellari:** Buyurtmalarni real vaqt rejimida qabul qilish va kuzatish.
+- **Ko'p tillilik (i18n):** UZ, RU, EN tillarini to'liq qo'llab-quvvatlash.
 
-Open [http://localhost:3000](http://localhost:3000).
+## O'rnatish va Ishga tushirish
 
-By default the app runs in **mock mode** (`NEXT_PUBLIC_USE_MOCK=true`) so every screen works without the Django backend.
+1. **Loyihani klonlash:**
+   ```bash
+   git clone <repo-url>
+   cd qrmenu_frontent
+   ```
 
-## Docker
+2. **Bog'liqliklarni o'rnatish:**
+   ```bash
+   npm install
+   ```
 
-Production:
+3. **Ishga tushirish:**
+   ```bash
+   npm run dev
+   ```
 
-```bash
-docker compose up --build -d
-```
+## Loyiha tuzilmasi
+- `src/app/` — Sahifalar (Next.js App Router).
+- `src/components/` — UI komponentlar va dashboardlar.
+- `src/lib/` — API so'rovlari, tip ta'riflari va tarjimalar.
+- `src/store/` — Holatni boshqarish (Zustand).
 
-Dev (hot reload, `dev` profile):
-
-```bash
-docker compose --profile dev up --build frontend-dev
-```
-
-Env (build-time for production image):
-
-```bash
-NEXT_PUBLIC_USE_MOCK=true
-NEXT_PUBLIC_API_URL=http://localhost:8000/api
-NEXT_PUBLIC_WS_URL=ws://localhost:8000/ws/orders/
-FRONTEND_PORT=3000
-```
-
-## Routes
-
-| Route | Purpose |
-| --- | --- |
-| `/` | Hub / entry |
-| `/login` | Staff login |
-| `/register` | Restaurant / staff registration |
-| `/menu/[tableNumber]` | Guest QR menu (e.g. `/menu/5`) |
-| `/kds` | Kitchen Display System |
-| `/waiter` | Waiter station |
-| `/director` | Director analytics dashboard |
-
-## Architecture
-
-```
-src/
-  app/                 # App Router pages
-  components/
-    menu/              # QR menu UI
-    kds/               # Kitchen tickets
-    waiter/            # Waiter board
-    director/          # Dashboard widgets
-    ui/                # Shared primitives
-  hooks/               # useWebSocket, useOrders
-  lib/                 # types, api client, mock data
-  store/               # Zustand cart
-```
-
-### Data layer
-
-- `src/lib/api.ts` — REST client. When mock is on, it mutates in-memory data and broadcasts local events.
-- `src/hooks/useWebSocket.ts` — connects to `NEXT_PUBLIC_WS_URL`, or listens to mock events when `NEXT_PUBLIC_USE_MOCK !== "false"`.
-- Cart persists in `localStorage` via Zustand.
-
-### Connect real backend
-
-Set in `.env.local`:
-
-```env
-NEXT_PUBLIC_USE_MOCK=false
-NEXT_PUBLIC_API_URL=http://localhost:8000/api
-NEXT_PUBLIC_WS_URL=ws://localhost:8000/ws/orders/
-```
-
-Expected API surface:
-
-- `POST /auth/login/` `{ email, password }` → `{ access, refresh, user }`
-- `POST /auth/register/` `{ email, password, fullName, restaurantName, role }` → `{ access, refresh, user }`
-- `GET /categories/`
-- `GET /menu/`
-- `POST /orders/`
-- `GET /orders/?status=`
-- `PATCH /orders/:id/status/` `{ status }`
-- `POST /waiter/call/`
-- `GET /tables/`
-- `GET /dashboard/stats/`
-
-Mock demo accounts (password `demo1234`):
-
-- `director@restoflow.uz` → `/director`
-- `kitchen@restoflow.uz` → `/kds`
-- `waiter@restoflow.uz` → `/waiter`
-
-WebSocket events: `order.created`, `order.updated`, `order.status_changed`, `waiter.called`, `stats.updated`.
-
-## Scripts
-
-```bash
-npm run dev
-npm run build
-npm run start
-npm run lint
-```
+---
+*Ushbu loyiha RestoFlow tizimining frontend qismi hisoblanadi.*
