@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { LayoutGrid, List, Moon, Sun, ChevronLeft, ChevronRight } from "lucide-react";
+import { LayoutGrid, List, Moon, Sun } from "lucide-react";
 import { api } from "@/lib/api";
 import type { Category, MenuItem } from "@/lib/types";
 import { useCartStore } from "@/store/cart-store";
@@ -22,7 +22,7 @@ export function QrMenuView({ tableNumber }: { tableNumber: number }) {
   const ITEMS_PER_PAGE = 8;
 
   const setTable = useCartStore((s) => s.setTable);
-  const { theme, setTheme, t } = usePreferences();
+  const { theme, setTheme, t, menuBgImage } = usePreferences();
 
   useEffect(() => {
     let cancelled = false;
@@ -66,7 +66,7 @@ export function QrMenuView({ tableNumber }: { tableNumber: number }) {
         aria-hidden
         className="fixed inset-0 pointer-events-none -z-10"
         style={{
-          backgroundImage: "url(https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=1200&q=80)",
+          backgroundImage: `url(${menuBgImage})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
           opacity: 0.1,

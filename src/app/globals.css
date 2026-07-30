@@ -111,10 +111,6 @@ body {
     color 220ms ease;
 }
 
-/* Smooth scrolling */
-html {
-  scroll-behavior: smooth;
-}
 
 /* Custom scrollbar */
 ::-webkit-scrollbar {

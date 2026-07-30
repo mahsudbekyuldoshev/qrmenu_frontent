@@ -30,6 +30,7 @@ export default function RootLayout({
     <html
       lang="uz"
       suppressHydrationWarning
+      data-scroll-behavior="smooth"
       className={`${display.variable} ${body.variable} h-full`}
     >
       <body className="min-h-full antialiased">

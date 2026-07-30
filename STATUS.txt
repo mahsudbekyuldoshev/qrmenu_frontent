@@ -54,5 +54,45 @@ O‘zgartirilgan:
       18 +   { label: "Manager", phone: "901112233" },
       19 +   { label: "Super Admin", phone: "909998877" },
       20   ];
-      21
-parol demo1234
+      21.   parol: demo1234
+
+
+
+
+
+
+
+
+
+Sana: 2026-07-30
+
+
+3. QILINGAN ISHLAR (2026-07-30 yangilanishi)
+--------------------------------------------
+
+3.1. UI/UX Modernizatsiyasi
+    - Barcha panellar (Director, Super Admin, Manager) zamonaviy va ixcham SaaS uslubiga o'tkazildi.
+    - Katta kartochkalar o'rniga qulay List/Table ko'rinishlari joriy qilindi.
+    - Analitika sahifalariga Recharts yordamida dinamik grafiklar (Line/Area, Bar chart) qo'shildi.
+
+3.2. Funksional yangilanishlar va Xatolar tuzatilishi
+    - Manager panel: Taomlar CRUD'i to'liq ishlaydigan qilindi (birinchi qatorga qo'shish, saqlash).
+    - Manager panel: Kategoriya boshqaruvi va taomga kategoriya biriktirish qo'shildi.
+    - Super Admin: Xarita funksiyasi `react-leaflet` yordamida interaktiv holga keltirildi.
+    - Super Admin: Restoran va Direktor formalariga `yup` + `react-hook-form` orqali validatsiyalar qo'shildi.
+    - Umumiy: Barcha panellarda til tanlash va "Chiqish" tugmalari to'g'ri ishlashi ta'minlandi.
+    - Umumiy: Lokalizatsiya muammolari (qattiq kodlangan matnlar) bartaraf etildi.
+    - Umumiy: `scroll-behavior: smooth` ogohlantirishi bartaraf etildi.
+
+4. YARATILGAN / O‘ZGARTIRILGAN FAYLLAR (QO‘SHIMCHA)
+--------------------------------------------------
+O‘zgartirilgan:
+    src/components/director/DirectorDashboard.tsx
+    src/components/super-admin/SuperAdminDashboard.tsx
+    src/components/manager/ManagerDashboard.tsx
+    src/components/menu/QrMenuView.tsx
+    src/providers/PreferencesProvider.tsx
+    src/app/layout.tsx
+    src/app/globals.css
+    src/lib/translations.ts
+    src/lib/types.ts

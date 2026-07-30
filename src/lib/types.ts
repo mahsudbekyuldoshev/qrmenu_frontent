@@ -96,6 +96,46 @@ export interface TableStatus {
   turnoverToday: number;
 }
 
+export interface StaffMember {
+  id: string;
+  fullName: string;
+  joinedDate: string;
+  birthYear: number;
+  salary: number;
+  role: StaffRole;
+}
+
+export interface Manager extends StaffMember {
+  role: "manager";
+}
+
+export interface Waiter extends StaffMember {
+  role: "waiter";
+}
+
+export interface Chef extends StaffMember {
+  role: "kitchen";
+}
+
+export type SubscriptionType = "Trial" | "Premium";
+
+export interface Restaurant {
+  id: string;
+  name: string;
+  address: string;
+  subscriptionType: SubscriptionType;
+  daysLeft: number;
+  directorId: string;
+  status: "active" | "inactive";
+  coordinates?: { lat: number; lng: number };
+}
+
+export interface Director extends User {
+  phone: string;
+  restaurantId?: string;
+  branchesCount?: number;
+}
+
 export interface DashboardStats {
   todayRevenue: number;
   todayOrders: number;
@@ -104,7 +144,11 @@ export interface DashboardStats {
   occupiedTables: number;
   totalTables: number;
   revenueByHour: { hour: string; amount: number }[];
+  revenueByDay: { day: string; amount: number }[];
+  revenueByWeek: { week: string; amount: number }[];
   topItems: { name: string; quantity: number; revenue: number }[];
+  totalEmployees: number;
+  totalMonthlySalary: number;
 }
 
 export interface CreateOrderPayload {

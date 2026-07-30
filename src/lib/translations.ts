@@ -31,6 +31,7 @@ export const translations = {
     directorPanel: "Direktor paneli",
     kdsPanel: "Oshxona ekrani",
     waiterPanel: "Ofitsiant paneli",
+    managerPanel: "Manager paneli",
     realTime: "Jonli",
     offline: "Oflayn",
     todayRevenue: "Bugungi tushum",
@@ -79,6 +80,40 @@ export const translations = {
     light: "Yorug'",
     dark: "To'q",
     
+    // Director
+    analytics: "Analitika",
+    managers: "Menejerlar",
+    waiters: "Ofitsiantlar",
+    chefs: "Oshpazlar",
+    totalEmployees: "Jami ishchilar",
+    totalSalary: "Jami oylik maosh",
+    dailyProfit: "Kunlik foyda",
+    weeklyProfit: "Haftalik foyda",
+    monthlyProfit: "Oylik foyda",
+    addManager: "Menejer qo'shish",
+    editManager: "Menejerni tahrirlash",
+    deleteManager: "Menejerni o'chirish",
+    joinedDate: "Ishga qabul qilingan sana",
+    birthYear: "Tug'ilgan yili",
+    salary: "Oylik maosh",
+    
+    // Super Admin
+    restaurants: "Restoranlar",
+    directors: "Direktorlar",
+    addRestaurant: "Restoran qo'shish",
+    editRestaurant: "Restoran tahrirlash",
+    deleteRestaurant: "Restoran o'chirish",
+    restaurantName: "Restoran nomi",
+    subscription: "Obuna",
+    daysLeft: "Qolgan kunlar",
+    address: "Manzil",
+    active: "Faol",
+    inactive: "Nofaol",
+    selectDirector: "Direktorni tanlang",
+    selectSubscription: "Obunani tanlang",
+    addDirector: "Direktor qo'shish",
+    editDirector: "Direktor tahrirlash",
+    
     // KDS Menu Management
     addDish: "Taom qo'shish",
     editDish: "Taomni tahrirlash",
@@ -86,10 +121,15 @@ export const translations = {
     dishName: "Taom nomi",
     dishDescription: "Tavsifi",
     dishPrice: "Narxi",
-    dishImage: "Rasm URL",
+    dishImage: "Rasm",
+    dishImageUrl: "Rasm URL",
+    uploadImage: "Rasm yuklash",
     save: "Saqlash",
     cancel: "Bekor qilish",
-    deleteConfirm: "Haqiqatan ham ushbu taomni o'chirmoqchimisiz?"
+    deleteConfirm: "Haqiqatan ham ushbu ma'lumotni o'chirmoqchimisiz?",
+    menuDesign: "Menyu dizayni",
+    bgImage: "Fon rasmi",
+    googleSearch: "Google'da qidirish"
   },
   ru: {
     // Auth
@@ -121,6 +161,7 @@ export const translations = {
     directorPanel: "Панель директора",
     kdsPanel: "Экран кухни",
     waiterPanel: "Панель официанта",
+    managerPanel: "Панель менеджера",
     realTime: "В реальном времени",
     offline: "Офлайн",
     todayRevenue: "Выручка за сегодня",
@@ -168,6 +209,40 @@ export const translations = {
     theme: "Тема",
     light: "Светлая",
     dark: "Темная",
+
+    // Director
+    analytics: "Аналитика",
+    managers: "Менеджеры",
+    waiters: "Официанты",
+    chefs: "Повара",
+    totalEmployees: "Всего сотрудников",
+    totalSalary: "Общая зарплата",
+    dailyProfit: "Дневная прибыль",
+    weeklyProfit: "Недельная прибыль",
+    monthlyProfit: "Месячная прибыль",
+    addManager: "Добавить менеджера",
+    editManager: "Изменить менеджера",
+    deleteManager: "Удалить менеджера",
+    joinedDate: "Дата приема",
+    birthYear: "Год рождения",
+    salary: "Зарплата",
+
+    // Super Admin
+    restaurants: "Рестораны",
+    directors: "Директора",
+    addRestaurant: "Добавить ресторан",
+    editRestaurant: "Изменить ресторан",
+    deleteRestaurant: "Удалить ресторан",
+    restaurantName: "Название ресторана",
+    subscription: "Подписка",
+    daysLeft: "Дней осталось",
+    address: "Адрес",
+    active: "Активен",
+    inactive: "Неактивен",
+    selectDirector: "Выберите директора",
+    selectSubscription: "Выберите подписку",
+    addDirector: "Добавить директора",
+    editDirector: "Изменить директора",
     
     // KDS Menu Management
     addDish: "Добавить блюдо",
@@ -176,10 +251,15 @@ export const translations = {
     dishName: "Название блюда",
     dishDescription: "Описание",
     dishPrice: "Цена",
-    dishImage: "URL изображения",
+    dishImage: "Изображение",
+    dishImageUrl: "URL изображения",
+    uploadImage: "Загрузить фото",
     save: "Сохранить",
     cancel: "Отмена",
-    deleteConfirm: "Вы действительно хотите удалить это блюдо?"
+    deleteConfirm: "Вы действительно хотите удалить эту информацию?",
+    menuDesign: "Дизайн меню",
+    bgImage: "Фоновое изображение",
+    googleSearch: "Поиск в Google"
   },
   en: {
     // Auth
@@ -211,6 +291,7 @@ export const translations = {
     directorPanel: "Director Panel",
     kdsPanel: "Kitchen Display",
     waiterPanel: "Waiter Panel",
+    managerPanel: "Manager Panel",
     realTime: "Real-time",
     offline: "Offline",
     todayRevenue: "Today's Revenue",
@@ -258,6 +339,40 @@ export const translations = {
     theme: "Theme",
     light: "Light",
     dark: "Dark",
+
+    // Director
+    analytics: "Analytics",
+    managers: "Managers",
+    waiters: "Waiters",
+    chefs: "Chefs",
+    totalEmployees: "Total Employees",
+    totalSalary: "Total Monthly Salary",
+    dailyProfit: "Daily Profit",
+    weeklyProfit: "Weekly Profit",
+    monthlyProfit: "Monthly Profit",
+    addManager: "Add Manager",
+    editManager: "Edit Manager",
+    deleteManager: "Delete Manager",
+    joinedDate: "Joined Date",
+    birthYear: "Birth Year",
+    salary: "Salary",
+
+    // Super Admin
+    restaurants: "Restaurants",
+    directors: "Directors",
+    addRestaurant: "Add Restaurant",
+    editRestaurant: "Edit Restaurant",
+    deleteRestaurant: "Delete Restaurant",
+    restaurantName: "Restaurant Name",
+    subscription: "Subscription",
+    daysLeft: "Days Left",
+    address: "Address",
+    active: "Active",
+    inactive: "Inactive",
+    selectDirector: "Select Director",
+    selectSubscription: "Select Subscription",
+    addDirector: "Add Director",
+    editDirector: "Edit Director",
     
     // KDS Menu Management
     addDish: "Add dish",
@@ -266,10 +381,15 @@ export const translations = {
     dishName: "Dish name",
     dishDescription: "Description",
     dishPrice: "Price",
-    dishImage: "Image URL",
+    dishImage: "Image",
+    dishImageUrl: "Image URL",
+    uploadImage: "Upload Image",
     save: "Save",
     cancel: "Cancel",
-    deleteConfirm: "Are you sure you want to delete this dish?"
+    deleteConfirm: "Are you sure you want to delete this information?",
+    menuDesign: "Menu Design",
+    bgImage: "Background Image",
+    googleSearch: "Search on Google"
   }
 };
 
