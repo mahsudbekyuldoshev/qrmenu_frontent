@@ -48,7 +48,7 @@ export function ManagerDashboard() {
             price: Number(priceInput.value),
             descriptionUz: descInput.value,
             categoryId: catSelect.value,
-            imageUrl: editingDish.imageUrl
+            imageUrl: (editingDish as any)?.imageUrl || ""
         } : item));
     } else {
         const newDish: MenuItem = {
