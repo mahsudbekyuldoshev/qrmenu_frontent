@@ -129,7 +129,13 @@ export const translations = {
     deleteConfirm: "Haqiqatan ham ushbu ma'lumotni o'chirmoqchimisiz?",
     menuDesign: "Menyu dizayni",
     bgImage: "Fon rasmi",
-    googleSearch: "Google'da qidirish"
+    selectImage: "Rasm tanlash",
+    searchImages: "Rasmlarni qidirish...",
+    photoBy: "Muallif",
+    selectingImage: "Rasm o'rnatilmoqda...",
+    imageSelected: "Fon rasmi yangilandi!",
+    apiNotConfigured: "Unsplash API kaliti sozlanmagan (503)",
+    imageLoadError: "Rasm yuklab olinmadi (400)"
   },
   ru: {
     // Auth
@@ -259,7 +265,13 @@ export const translations = {
     deleteConfirm: "Вы действительно хотите удалить эту информацию?",
     menuDesign: "Дизайн меню",
     bgImage: "Фоновое изображение",
-    googleSearch: "Поиск в Google"
+    selectImage: "Выбрать фото",
+    searchImages: "Поиск изображений...",
+    photoBy: "Автор",
+    selectingImage: "Установка фото...",
+    imageSelected: "Фоновое фото обновлено!",
+    apiNotConfigured: "Ключ Unsplash API не настроен (503)",
+    imageLoadError: "Фото не загружено (400)"
   },
   en: {
     // Auth
@@ -389,7 +401,13 @@ export const translations = {
     deleteConfirm: "Are you sure you want to delete this information?",
     menuDesign: "Menu Design",
     bgImage: "Background Image",
-    googleSearch: "Search on Google"
+    selectImage: "Select Image",
+    searchImages: "Search images...",
+    photoBy: "Photo by",
+    selectingImage: "Applying image...",
+    imageSelected: "Background image updated!",
+    apiNotConfigured: "Unsplash API key not configured (503)",
+    imageLoadError: "Image failed to load (400)"
   }
 };
 

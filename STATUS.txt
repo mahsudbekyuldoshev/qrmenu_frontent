@@ -48,12 +48,12 @@ O‘zgartirilgan:
 
 
 
-   15     { label: "Direktor", phone: "901234567" },
+      15     { label: "Direktor", phone: "901234567" },
       16     { label: "Oshxona", phone: "907654321" },
       17     { label: "Ofitsiant", phone: "900001122" },
       18 +   { label: "Manager", phone: "901112233" },
       19 +   { label: "Super Admin", phone: "909998877" },
-      20   ];
+
       21.   parol: demo1234
 
 

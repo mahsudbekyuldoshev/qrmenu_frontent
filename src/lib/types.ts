@@ -5,14 +5,21 @@ export type OrderStatus =
   | "delivered"
   | "cancelled";
 
-export type StaffRole = "kitchen" | "waiter" | "director" | "manager" | "super-admin";
+export type StaffRole = "chef" | "waiter" | "director" | "manager" | "super-admin";
 
 export interface User {
-  id: string;
-  email: string;
-  fullName: string;
-  restaurantName: string;
+  id: number;
+  phone: string;
+  first_name: string;
+  last_name: string;
   role: StaffRole;
+  restaurant_id: number | null;
+  restaurant_slug: string | null;
+  restaurant_name: string | null;
+  // computed convenience
+  fullName?: string;
+  email?: string;
+  restaurantName?: string;
 }
 
 export interface AuthResponse {
@@ -22,39 +29,51 @@ export interface AuthResponse {
 }
 
 export interface LoginPayload {
-  email: string;
+  phone: string;
   password: string;
 }
 
 export interface RegisterPayload {
-  email: string;
+  phone: string;
   password: string;
-  fullName: string;
-  restaurantName: string;
-  role: StaffRole;
+  full_name: string;
+  role: "waiter" | "chef";
 }
 
 export interface Category {
-  id: string;
-  nameUz: string;
-  nameRu: string;
-  nameEn: string;
-  sortOrder: number;
+  id: number;
+  name: string;
+  slug: string;
+  description?: string;
+  is_active: boolean;
+  ordering: number;
+  dishes: MenuItem[];
+  // legacy compat
+  nameUz?: string;
+  nameRu?: string;
+  nameEn?: string;
+  sortOrder?: number;
 }
 
 export interface MenuItem {
-  id: string;
-  categoryId: string;
-  nameUz: string;
-  nameRu: string;
-  nameEn: string;
-  descriptionUz: string;
-  descriptionRu: string;
-  descriptionEn: string;
-  price: number;
-  imageUrl: string;
-  isAvailable: boolean;
-  prepTimeMinutes: number;
+  id: number;
+  category: number;
+  name: string;
+  description?: string;
+  price: string | number;
+  image: string | null;
+  is_available: boolean;
+  // legacy compat fields
+  categoryId?: string;
+  nameUz?: string;
+  nameRu?: string;
+  nameEn?: string;
+  descriptionUz?: string;
+  descriptionRu?: string;
+  descriptionEn?: string;
+  imageUrl?: string;
+  isAvailable?: boolean;
+  prepTimeMinutes?: number;
 }
 
 export interface CartItem {
@@ -67,33 +86,50 @@ export interface CartItem {
 }
 
 export interface OrderItem {
-  id: string;
-  menuItemId: string;
-  name: string;
-  nameUz: string;
+  id: number;
+  order: number;
+  dish: number;
+  dish_name: string;
   quantity: number;
-  unitPrice: number;
+  price: string | number;
+  // legacy compat
+  menuItemId?: string;
+  name?: string;
+  nameUz?: string;
+  unitPrice?: number;
   note?: string;
 }
 
 export interface Order {
-  id: string;
-  tableNumber: number;
+  id: number;
+  restaurant: number;
+  restaurant_name: string;
+  table: number;
+  table_number: number;
   status: OrderStatus;
+  status_display: string;
+  total_price: string | number;
+  comment?: string;
   items: OrderItem[];
-  totalAmount: number;
-  createdAt: string;
-  updatedAt: string;
+  created_at: string;
+  // legacy compat
+  tableNumber?: number;
+  totalAmount?: number;
+  updatedAt?: string;
   notes?: string;
 }
 
 export interface TableStatus {
+  id: number;
   number: number;
-  isOccupied: boolean;
-  currentOrderId: string | null;
-  guestCount: number;
-  seatedAt: string | null;
-  turnoverToday: number;
+  qr_hash: string;
+  is_active: boolean;
+  // legacy compat
+  isOccupied?: boolean;
+  currentOrderId?: string | null;
+  guestCount?: number;
+  seatedAt?: string | null;
+  turnoverToday?: number;
 }
 
 export interface StaffMember {
@@ -173,4 +209,11 @@ export interface WsEvent<T = unknown> {
   type: WsEventType;
   payload: T;
   timestamp: string;
+}
+
+export interface UnsplashImage {
+  unsplash_id: string;
+  thumb_url: string;
+  full_url: string;
+  photographer: string;
 }

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Manrope, Syne } from "next/font/google";
+import { Toaster } from "react-hot-toast";
 import "./globals.css";
 import { PreferencesProvider } from "@/providers/PreferencesProvider";
 
@@ -34,6 +35,7 @@ export default function RootLayout({
       className={`${display.variable} ${body.variable} h-full`}
     >
       <body className="min-h-full antialiased">
+        <Toaster position="top-right" />
         <PreferencesProvider>{children}</PreferencesProvider>
       </body>
     </html>

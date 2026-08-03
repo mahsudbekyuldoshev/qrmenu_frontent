@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Plus, Edit2, Trash2, Image as ImageIcon, Save, Loader2, LogOut, Search, UtensilsCrossed, XCircle } from "lucide-react";
+import { Plus, Edit2, Trash2, Image as ImageIcon, Save, Loader2, LogOut, UtensilsCrossed, XCircle, Sparkles } from "lucide-react";
+import toast from "react-hot-toast";
 import Link from "next/link";
 import { api } from "@/lib/api";
 import type { MenuItem, Category } from "@/lib/types";
@@ -13,6 +14,7 @@ import { TopBar } from "@/components/chrome/TopBar";
 import { ThemeToggle } from "@/components/chrome/ThemeToggle";
 import { LanguageSelect } from "@/components/chrome/LanguageSelect";
 import { useRouter } from "next/navigation";
+import { ImagePickerModal } from "@/components/manager/ImagePickerModal";
 
 export function ManagerDashboard() {
   const { t, language, menuBgImage, setMenuBgImage } = usePreferences();
@@ -26,6 +28,7 @@ export function ManagerDashboard() {
   const [showDishModal, setShowDishModal] = useState(false);
   const [editingDish, setEditingDish] = useState<MenuItem | null>(null);
   const [showCategoryModal, setShowCategoryModal] = useState(false);
+  const [showImagePicker, setShowImagePicker] = useState(false);
 
   useEffect(() => {
     // Load categories from API or mock
@@ -102,7 +105,7 @@ export function ManagerDashboard() {
     setSavingBg(true);
     setTimeout(() => {
       setSavingBg(false);
-      alert(t.save);
+      toast.success(t.save);
     }, 1000);
   }
 
@@ -154,7 +157,7 @@ export function ManagerDashboard() {
               <p className="text-sm text-[var(--muted)] mt-1">Taomlar va menyu tarkibini boshqarish</p>
             </div>
             <div className="flex gap-2">
-                <Link href="/menu/1">
+                <Link href="/manager/menu">
                     <Button size="sm" variant="ghost" className="rounded-2xl h-12 px-6">
                         {t.menu} ({t.realTime} Preview)
                     </Button>
@@ -241,14 +244,13 @@ export function ManagerDashboard() {
                         {savingBg ? <Loader2 className="size-5 animate-spin" /> : <Save className="size-5 mr-2" />}
                         {t.save}
                     </Button>
-                    <a 
-                        href="https://www.google.com/search?q=restaurant+menu+background+minimalist&tbm=isch" 
-                        target="_blank" 
-                        rel="noreferrer"
-                        className="flex items-center justify-center gap-2 px-6 h-14 rounded-2xl bg-[var(--bg)] border border-[var(--line)] text-sm font-bold text-[var(--muted)] hover:text-[var(--ink)] hover:border-[var(--ink)] transition"
+                    <Button
+                        variant="secondary"
+                        className="flex items-center justify-center gap-2 px-6 h-14 rounded-2xl font-bold"
+                        onClick={() => setShowImagePicker(true)}
                     >
-                        <Search className="size-4" /> {t.googleSearch}
-                    </a>
+                        <Sparkles className="size-4" /> {t.selectImage}
+                    </Button>
                 </div>
             </div>
 
@@ -287,6 +289,14 @@ export function ManagerDashboard() {
           </div>
         </section>
       </main>
+
+      {/* Image Picker Modal */}
+      {showImagePicker && (
+        <ImagePickerModal
+          onClose={() => setShowImagePicker(false)}
+          onSelected={(url) => setMenuBgImage(url)}
+        />
+      )}
 
       {/* Dish Modal */}
       {showDishModal && (

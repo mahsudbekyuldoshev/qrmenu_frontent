@@ -169,6 +169,12 @@ export function DirectorDashboard() {
           <NavItem tab="managers" label={t.managers} icon={Users} />
           <NavItem tab="waiters" label={t.waiters} icon={Briefcase} />
           <NavItem tab="chefs" label={t.chefs} icon={ChefHat} />
+          <button
+              onClick={() => router.push("/director/menu")}
+              className="flex w-full items-center gap-3 px-4 py-3 rounded-xl transition hover:bg-[var(--surface-2)] text-[var(--muted)]"
+          >
+              <UtensilsCrossed className="size-5" /> <span className="font-medium">{t.menu}</span>
+          </button>
         </nav>
 
         <div className="pt-6 border-t border-[var(--line)]">

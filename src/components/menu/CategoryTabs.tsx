@@ -28,7 +28,7 @@ export function CategoryTabs({
 
 
   return (
-    <div className="sticky top-[3.75rem] z-20 -mx-4 overflow-x-auto border-b border-[var(--line)] bg-[var(--bg)]/90 px-4 py-3 backdrop-blur-md">
+    <div className="sticky top-[3.75rem] z-20 -mx-4 overflow-x-auto border-b border-[var(--line)] bg-[var(--bg)]/80 px-4 py-3 backdrop-blur-md">
       <div className="flex min-w-max gap-2">
         {tabs.map((tab) => {
           const active = tab.id === activeId;

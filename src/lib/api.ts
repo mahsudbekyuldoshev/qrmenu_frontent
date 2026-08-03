@@ -20,11 +20,12 @@ import type {
   TableStatus,
   Category,
   User,
+  UnsplashImage,
 } from "./types";
 import { uid } from "./utils";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000/api";
-const USE_MOCK = process.env.NEXT_PUBLIC_USE_MOCK !== "false";
+const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000/api/v1";
+const USE_MOCK = process.env.NEXT_PUBLIC_USE_MOCK === "true";
 
 type MockAccount = User & { password: string };
 
@@ -107,10 +108,27 @@ function parseApiError(text: string, status: number): Error {
 }
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
+  // Pull token from Zustand persisted store (localStorage)
+  let token: string | null = null;
+  if (typeof window !== "undefined") {
+    try {
+      const raw = localStorage.getItem("restoflow-auth");
+      if (raw) {
+        const parsed = JSON.parse(raw) as { state?: { accessToken?: string } };
+        token = parsed?.state?.accessToken ?? null;
+      }
+    } catch { /* ignore */ }
+  }
+
+  const authHeader: Record<string, string> = token
+    ? { Authorization: `Bearer ${token}` }
+    : {};
+
   const res = await fetch(`${API_BASE}${path}`, {
     ...init,
     headers: {
       "Content-Type": "application/json",
+      ...authHeader,
       ...(init?.headers ?? {}),
     },
     cache: "no-store",
@@ -133,10 +151,10 @@ export const api = {
   async login(payload: LoginPayload): Promise<AuthResponse> {
     if (USE_MOCK) {
       await delay(350);
-      const email = payload.email.trim().toLowerCase();
-      const account = mockAccounts.find((a) => a.email === email);
+      const phone = payload.phone.replace(/\D/g, "");
+      const account = mockAccounts.find((a) => a.phone === phone || a.phone === `+998${phone}`);
       if (!account || account.password !== payload.password) {
-        throw new Error("Email yoki parol noto‘g‘ri");
+        throw new Error("Telefon raqam yoki parol noto'g'ri");
       }
       return toAuthResponse(stripPassword(account));
     }
@@ -149,24 +167,16 @@ export const api = {
   async register(payload: RegisterPayload): Promise<AuthResponse> {
     if (USE_MOCK) {
       await delay(450);
-      const email = payload.email.trim().toLowerCase();
-      if (mockAccounts.some((a) => a.email === email)) {
-        throw new Error("Bu email allaqachon ro‘yxatdan o‘tgan");
-      }
-      if (payload.password.length < 6) {
-        throw new Error("Parol kamida 6 ta belgidan iborat bo‘lsin");
-      }
-      const roles: StaffRole[] = ["director", "waiter", "kitchen"];
-      if (!roles.includes(payload.role)) {
-        throw new Error("Noto‘g‘ri rol tanlandi");
-      }
       const account: MockAccount = {
-        id: uid("usr"),
-        email,
+        id: uid("usr") as unknown as number,
+        phone: payload.phone,
         password: payload.password,
-        fullName: payload.fullName.trim(),
-        restaurantName: payload.restaurantName.trim(),
-        role: payload.role,
+        first_name: payload.full_name?.split(" ")[0] ?? "",
+        last_name: payload.full_name?.split(" ").slice(1).join(" ") ?? "",
+        role: payload.role as StaffRole,
+        restaurant_id: null,
+        restaurant_slug: null,
+        restaurant_name: null,
       };
       mockAccounts.push(account);
       return toAuthResponse(stripPassword(account));
@@ -180,7 +190,7 @@ export const api = {
   async getCategories(): Promise<Category[]> {
     if (USE_MOCK) {
       await delay();
-      return [...categories].sort((a, b) => a.sortOrder - b.sortOrder);
+      return [...categories].sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
     }
     return request<Category[]>("/categories/");
   },
@@ -189,45 +199,55 @@ export const api = {
     if (USE_MOCK) {
       await delay();
       void tableNumber;
-      return menuItems.filter((m) => m.isAvailable);
+      return menuItems.filter((m) => m.isAvailable ?? m.is_available);
     }
-    const q = tableNumber ? `?table=${tableNumber}` : "";
-    return request<MenuItem[]>(`/menu/${q}`);
+    return request<MenuItem[]>("/dishes/");
   },
 
   async createOrder(payload: CreateOrderPayload): Promise<Order> {
     if (USE_MOCK) {
       await delay(400);
       const items = payload.items.map((line) => {
-        const menu = menuItems.find((m) => m.id === line.menuItemId);
+        const menu = menuItems.find((m) => String(m.id) === String(line.menuItemId));
         if (!menu) throw new Error(`Menu item not found: ${line.menuItemId}`);
         return {
-          id: uid("oi"),
-          menuItemId: menu.id,
-          name: menu.name,
-          nameUz: menu.nameUz,
+          id: uid("oi") as unknown as number,
+          order: 0 as number,
+          dish: menu.id,
+          dish_name: menu.name ?? menu.nameUz ?? "",
           quantity: line.quantity,
-          unitPrice: menu.price,
+          price: menu.price,
           note: line.note,
         };
       });
       const order: Order = {
-        id: uid("ord"),
-        tableNumber: payload.tableNumber,
+        id: uid("ord") as unknown as number,
+        restaurant: 0,
+        restaurant_name: "",
+        table: payload.tableNumber,
+        table_number: payload.tableNumber,
         status: "pending",
+        status_display: "Kutilmoqda",
+        total_price: items.reduce((s, i) => s + Number(i.price) * i.quantity, 0),
         items,
-        totalAmount: items.reduce((s, i) => s + i.unitPrice * i.quantity, 0),
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        notes: payload.notes,
+        created_at: new Date().toISOString(),
+        tableNumber: payload.tableNumber,
       };
       setMockOrders([order, ...mockOrders]);
       emitLocal("order.created", order);
       return order;
     }
+    const backendPayload = {
+      table: payload.tableNumber,
+      uploaded_items: payload.items.map((i) => ({
+        dish: i.menuItemId,
+        quantity: i.quantity,
+      })),
+      comment: payload.notes,
+    };
     return request<Order>("/orders/", {
       method: "POST",
-      body: JSON.stringify(payload),
+      body: JSON.stringify(backendPayload),
     });
   },
 
@@ -245,7 +265,8 @@ export const api = {
       }
       return list.sort(
         (a, b) =>
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+          new Date(b.created_at ?? b.createdAt ?? "").getTime() -
+          new Date(a.created_at ?? a.createdAt ?? "").getTime(),
       );
     }
     const search = new URLSearchParams();
@@ -259,21 +280,21 @@ export const api = {
     return request<Order[]>(`/orders/${q}`);
   },
 
-  async updateOrderStatus(orderId: string, status: OrderStatus): Promise<Order> {
+  async updateOrderStatus(orderId: string | number, status: OrderStatus): Promise<Order> {
     if (USE_MOCK) {
       await delay(200);
       const next = mockOrders.map((o) =>
-        o.id === orderId
-          ? { ...o, status, updatedAt: new Date().toISOString() }
+        String(o.id) === String(orderId)
+          ? { ...o, status }
           : o,
       );
-      const updated = next.find((o) => o.id === orderId);
+      const updated = next.find((o) => String(o.id) === String(orderId));
       if (!updated) throw new Error("Order not found");
       setMockOrders(next);
       emitLocal("order.status_changed", updated);
       return updated;
     }
-    return request<Order>(`/orders/${orderId}/status/`, {
+    return request<Order>(`/orders/${orderId}/`, {
       method: "PATCH",
       body: JSON.stringify({ status }),
     });
@@ -308,6 +329,46 @@ export const api = {
       return rebuildDashboardStats();
     }
     return request<DashboardStats>("/dashboard/stats/");
+  },
+
+  async searchBackgrounds(q: string): Promise<UnsplashImage[]> {
+    if (USE_MOCK) {
+      await delay(500);
+      const res = await fetch(
+        `https://api.unsplash.com/search/photos?query=${encodeURIComponent(q)}&per_page=16&orientation=landscape`,
+        {
+          headers: {
+            Authorization: `Client-ID ${process.env.NEXT_PUBLIC_UNSPLASH_ACCESS_KEY ?? "demo"}`,
+          },
+        },
+      );
+      if (!res.ok) {
+        if (res.status === 403 || res.status === 401) {
+          throw Object.assign(new Error("Unsplash API kaliti sozlanmagan"), { status: 503 });
+        }
+        throw Object.assign(new Error("Qidiruv muvaffaqiyatsiz"), { status: res.status });
+      }
+      const data = await res.json() as { results: Array<{ id: string; urls: { thumb: string; full: string; regular: string }; user: { name: string } }> };
+      return data.results.map((r) => ({
+        unsplash_id: r.id,
+        thumb_url: r.urls.thumb,
+        full_url: r.urls.regular,
+        photographer: r.user.name,
+      }));
+    }
+    return request<UnsplashImage[]>(`/v1/manager/backgrounds/search/?q=${encodeURIComponent(q)}`);
+  },
+
+  async selectBackground(payload: { image_url: string; unsplash_id: string }): Promise<{ menu_background: string }> {
+    if (USE_MOCK) {
+      await delay(1200);
+      // Simulate server downloading the image and returning a URL
+      return { menu_background: payload.image_url };
+    }
+    return request<{ menu_background: string }>("/v1/manager/backgrounds/select/", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
   },
 };
 

@@ -11,9 +11,10 @@ import { usePreferences } from "@/providers/PreferencesProvider";
 interface MenuItemCardProps {
   item: MenuItem;
   layout?: "list" | "grid";
+  readOnly?: boolean;
 }
 
-export function MenuItemCard({ item, layout = "list" }: MenuItemCardProps) {
+export function MenuItemCard({ item, layout = "list", readOnly = false }: MenuItemCardProps) {
   const { language } = usePreferences();
   const cartItem = useCartStore((s) =>
     s.items.find((i) => i.menuItemId === item.id),
@@ -59,38 +60,40 @@ export function MenuItemCard({ item, layout = "list" }: MenuItemCardProps) {
             <span className="text-sm font-bold text-[var(--ink)]">
               {formatMoney(item.price)}
             </span>
-            {!cartItem ? (
-              <button
-                type="button"
-                disabled={!item.isAvailable}
-                onClick={() => addItem(item)}
-                className="grid size-8 place-items-center rounded-xl bg-[var(--accent)] text-[var(--accent-fg)] transition hover:brightness-110 active:scale-95 disabled:opacity-40"
-                aria-label={`${name} qo'shish`}
-              >
-                <Plus className="size-4" />
-              </button>
-            ) : (
-              <div className="flex items-center gap-1 rounded-xl bg-[var(--surface-2)] p-0.5">
+            {!readOnly && (
+              !cartItem ? (
                 <button
                   type="button"
-                  aria-label="Kamaytirish"
-                  className="grid size-6 place-items-center rounded-lg bg-[var(--bg)] text-[var(--ink)] transition hover:bg-[var(--surface-3)]"
-                  onClick={() => setQuantity(item.id, cartItem.quantity - 1)}
+                  disabled={!item.isAvailable}
+                  onClick={() => addItem(item)}
+                  className="grid size-8 place-items-center rounded-xl bg-[var(--accent)] text-[var(--accent-fg)] transition hover:brightness-110 active:scale-95 disabled:opacity-40"
+                  aria-label={`${name} qo'shish`}
                 >
-                  <Minus className="size-3" />
+                  <Plus className="size-4" />
                 </button>
-                <span className="w-5 text-center text-xs font-bold text-[var(--ink)]">
-                  {cartItem.quantity}
-                </span>
-                <button
-                  type="button"
-                  aria-label="Ko'paytirish"
-                  className="grid size-6 place-items-center rounded-lg bg-[var(--accent)] text-[var(--accent-fg)] transition hover:brightness-110"
-                  onClick={() => setQuantity(item.id, cartItem.quantity + 1)}
-                >
-                  <Plus className="size-3" />
-                </button>
-              </div>
+              ) : (
+                <div className="flex items-center gap-1 rounded-xl bg-[var(--surface-2)] p-0.5">
+                  <button
+                    type="button"
+                    aria-label="Kamaytirish"
+                    className="grid size-6 place-items-center rounded-lg bg-[var(--bg)] text-[var(--ink)] transition hover:bg-[var(--surface-3)]"
+                    onClick={() => setQuantity(item.id, cartItem.quantity - 1)}
+                  >
+                    <Minus className="size-3" />
+                  </button>
+                  <span className="w-5 text-center text-xs font-bold text-[var(--ink)]">
+                    {cartItem.quantity}
+                  </span>
+                  <button
+                    type="button"
+                    aria-label="Ko'paytirish"
+                    className="grid size-6 place-items-center rounded-lg bg-[var(--accent)] text-[var(--accent-fg)] transition hover:brightness-110"
+                    onClick={() => setQuantity(item.id, cartItem.quantity + 1)}
+                  >
+                    <Plus className="size-3" />
+                  </button>
+                </div>
+              )
             )}
           </div>
         </div>
@@ -119,38 +122,40 @@ export function MenuItemCard({ item, layout = "list" }: MenuItemCardProps) {
           <span className="text-base font-bold text-[var(--ink)]">
             {formatMoney(item.price)}
           </span>
-          {!cartItem ? (
-            <Button
-              size="sm"
-              disabled={!item.isAvailable}
-              onClick={() => addItem(item)}
-              className="min-w-[5.5rem]"
-            >
-              <Plus className="size-4" />
-              {item.isAvailable ? "Qo\u02BBshish" : "Mavjud emas"}
-            </Button>
-          ) : (
-            <div className="flex items-center gap-2 rounded-xl bg-[var(--surface)] p-1">
-              <button
-                type="button"
-                aria-label="Kamaytirish"
-                className="grid size-8 place-items-center rounded-lg bg-[var(--bg)] text-[var(--ink)] transition hover:bg-[var(--surface-2)]"
-                onClick={() => setQuantity(item.id, cartItem.quantity - 1)}
-              >
-                <Minus className="size-4" />
-              </button>
-              <span className="w-6 text-center text-sm font-bold text-[var(--ink)]">
-                {cartItem.quantity}
-              </span>
-              <button
-                type="button"
-                aria-label="Ko'paytirish"
-                className="grid size-8 place-items-center rounded-lg bg-[var(--accent)] text-[var(--accent-fg)] transition hover:brightness-110"
-                onClick={() => setQuantity(item.id, cartItem.quantity + 1)}
+          {!readOnly && (
+            !cartItem ? (
+              <Button
+                size="sm"
+                disabled={!item.isAvailable}
+                onClick={() => addItem(item)}
+                className="min-w-[5.5rem]"
               >
                 <Plus className="size-4" />
-              </button>
-            </div>
+                {item.isAvailable ? "Qo\u02BBshish" : "Mavjud emas"}
+              </Button>
+            ) : (
+              <div className="flex items-center gap-2 rounded-xl bg-[var(--surface)] p-1">
+                <button
+                  type="button"
+                  aria-label="Kamaytirish"
+                  className="grid size-8 place-items-center rounded-lg bg-[var(--bg)] text-[var(--ink)] transition hover:bg-[var(--surface-2)]"
+                  onClick={() => setQuantity(item.id, cartItem.quantity - 1)}
+                >
+                  <Minus className="size-4" />
+                </button>
+                <span className="w-6 text-center text-sm font-bold text-[var(--ink)]">
+                  {cartItem.quantity}
+                </span>
+                <button
+                  type="button"
+                  aria-label="Ko'paytirish"
+                  className="grid size-8 place-items-center rounded-lg bg-[var(--accent)] text-[var(--accent-fg)] transition hover:brightness-110"
+                  onClick={() => setQuantity(item.id, cartItem.quantity + 1)}
+                >
+                  <Plus className="size-4" />
+                </button>
+              </div>
+            )
           )}
         </div>
       </div>

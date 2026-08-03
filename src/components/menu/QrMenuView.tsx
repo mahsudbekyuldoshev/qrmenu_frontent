@@ -12,7 +12,7 @@ import { CartDrawer } from "./CartDrawer";
 import { RESTAURANT_NAME } from "@/lib/mock-data";
 import { Button } from "@/components/ui/Button";
 
-export function QrMenuView({ tableNumber }: { tableNumber: number }) {
+export function QrMenuView({ tableNumber, readOnly = false }: { tableNumber?: number, readOnly?: boolean }) {
   const [categories, setCategories] = useState<Category[]>([]);
   const [items, setItems] = useState<MenuItem[]>([]);
   const [activeCategory, setActiveCategory] = useState<string | "all">("all");
@@ -26,7 +26,9 @@ export function QrMenuView({ tableNumber }: { tableNumber: number }) {
 
   useEffect(() => {
     let cancelled = false;
-    queueMicrotask(() => setTable(tableNumber));
+    if (tableNumber) {
+        queueMicrotask(() => setTable(tableNumber));
+    }
 
     async function fetchMenu() {
       try {
@@ -60,35 +62,43 @@ export function QrMenuView({ tableNumber }: { tableNumber: number }) {
   }, [filtered, currentPage]);
 
   return (
-    <div className="menu-shell relative mx-auto min-h-dvh max-w-7xl pb-28 px-4 overflow-hidden">
-      {/* Background elements */}
-      <div
-        aria-hidden
-        className="fixed inset-0 pointer-events-none -z-10"
+    <div className="relative min-h-dvh w-full overflow-x-hidden">
+      {/* Background container covering entire viewport */}
+      <div 
+        className="fixed inset-0 w-full h-full bg-black"
         style={{
-          backgroundImage: `url(${menuBgImage})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          opacity: 0.1,
-          filter: "blur(40px) saturate(1.2)",
+            backgroundImage: menuBgImage ? `url(${menuBgImage})` : undefined,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundAttachment: 'fixed',
+            zIndex: -2,
         }}
       />
-      <div
-        aria-hidden
-        className="fixed inset-0 pointer-events-none -z-10 bg-gradient-to-br from-[var(--bg)] via-[var(--bg)]/95 to-[var(--accent)]/5"
-      />
+      {/* Background Overlay covering entire viewport */}
+      {menuBgImage && (
+        <div 
+            className="fixed inset-0 w-full h-full bg-black/60" 
+            style={{ zIndex: -1 }}
+        />
+      )}
 
-      {/* Sticky header */}
-      <header className="sticky top-0 z-30 border-b border-[var(--line)] bg-[var(--bg)]/90 px-4 py-3 backdrop-blur-md -mx-4 mb-6">
+      <div 
+          className="menu-shell relative mx-auto min-h-dvh max-w-7xl pb-28 px-4"
+      >
+        {/* Sticky header */}
+        <header className="sticky top-0 z-30 border-b border-[var(--line)] bg-[var(--bg)]/80 px-4 py-3 backdrop-blur-md -mx-4 mb-6">
         <div className="flex items-center justify-between gap-3">
           <div className="min-w-0">
-            <p className="text-[0.7rem] uppercase tracking-[0.22em] text-[var(--accent)]">
-              Stol #{tableNumber}
-            </p>
+            {tableNumber && (
+              <p className="text-[0.7rem] uppercase tracking-[0.22em] text-[var(--accent)]">
+                Stol #{tableNumber}
+              </p>
+            )}
             <h1 className="font-[family-name:var(--font-display)] text-2xl leading-none tracking-tight text-[var(--ink)]">
               {RESTAURANT_NAME}
             </h1>
           </div>
+
 
           {/* Controls: layout toggle + theme toggle */}
           <div className="flex items-center gap-2 shrink-0">
@@ -178,7 +188,7 @@ export function QrMenuView({ tableNumber }: { tableNumber: number }) {
             }`}
           >
             {paginatedItems.map((item) => (
-              <MenuItemCard key={item.id} item={item} layout={gridMode} />
+              <MenuItemCard key={item.id} item={item} layout={gridMode} readOnly={readOnly} />
             ))}
           </div>
           {/* Pagination */}
@@ -190,10 +200,11 @@ export function QrMenuView({ tableNumber }: { tableNumber: number }) {
             </div>
           )}
           </>
-        )}
-      </div>
+          )}
+          </div>
 
-      <CartDrawer tableNumber={tableNumber} />
-    </div>
-  );
+          {!readOnly && <CartDrawer tableNumber={tableNumber || 0} />}
+        </div>
+      </div>
+    );
 }
