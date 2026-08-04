@@ -11,6 +11,7 @@ interface AuthState {
   setSession: (auth: AuthResponse) => void;
   logout: () => void;
   isAuthenticated: () => boolean;
+  hasRole: (roles: User["role"] | User["role"][]) => boolean;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -35,6 +36,12 @@ export const useAuthStore = create<AuthState>()(
         }),
 
       isAuthenticated: () => Boolean(get().accessToken && get().user),
+      hasRole: (roles) => {
+        const user = get().user;
+        if (!user) return false;
+        const requiredRoles = Array.isArray(roles) ? roles : [roles];
+        return requiredRoles.includes(user.role);
+      },
     }),
     { name: "restoflow-auth" },
   ),

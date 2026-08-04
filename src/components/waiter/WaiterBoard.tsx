@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { BellRing, Radio, RefreshCw, X, LogOut } from "lucide-react";
 import { useOrders } from "@/hooks/useOrders";
 import { useWebSocket } from "@/hooks/useWebSocket";
@@ -35,12 +35,14 @@ export function WaiterBoard() {
     useOrders(WAITER_STATUSES);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [calls, setCalls] = useState<WaiterCall[]>([]);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useWebSocket({
     onEvent: (event: WsEvent) => {
       if (event.type === "waiter.called") {
         const payload = event.payload as WaiterCall;
         setCalls((prev) => [payload, ...prev].slice(0, 8));
+        if (audioRef.current) audioRef.current.play().catch(console.error);
       }
     },
   });
@@ -107,19 +109,26 @@ export function WaiterBoard() {
 
 
       <div className="px-4 py-5 md:px-6">
+        <audio ref={audioRef} src="/notification.mp3" />
         {/* Waiter call alerts */}
         {calls.length > 0 && (
           <div className="mb-5 space-y-2">
-            {calls.map((call, idx) => (
+            {calls.map((call, idx) => {
+              const isBill = call.reason === "bill_request";
+              return (
               <div
                 key={`${call.tableNumber}-${call.createdAt}-${idx}`}
-                className="flex items-center justify-between gap-3 rounded-2xl border border-amber-400/30 bg-amber-400/10 px-4 py-3 animate-fade-up"
+                className={`flex items-center justify-between gap-3 rounded-2xl border px-4 py-3 animate-fade-up ${
+                    isBill 
+                        ? "border-rose-500 bg-rose-500/20" 
+                        : "border-amber-400/30 bg-amber-400/10"
+                }`}
               >
-                <div className="flex items-center gap-3 text-amber-300">
-                  <BellRing className="size-5 shrink-0 animate-pulse-soft" />
+                <div className="flex items-center gap-3">
+                  <BellRing className={`size-5 shrink-0 animate-pulse-soft ${isBill ? "text-rose-500" : "text-amber-300"}`} />
                   <div>
-                    <p className="font-semibold text-[var(--ink)]">
-                      {t.table} {call.tableNumber} — {t.waiterPanel}
+                    <p className={`font-semibold ${isBill ? "text-rose-900" : "text-[var(--ink)]"}`}>
+                      {t.table} {call.tableNumber} — {isBill ? "TO'LOV SO'ROVI!" : t.waiterPanel}
                     </p>
                     <p className="text-sm text-[var(--muted)]">
                       {call.reason ?? "Mijoz yordam so'radi"}
@@ -135,7 +144,7 @@ export function WaiterBoard() {
                   <X className="size-4" />
                 </button>
               </div>
-            ))}
+            )})}
           </div>
         )}
 

@@ -33,6 +33,7 @@ export const menuItems: MenuItem[] = [
       "https://images.unsplash.com/photo-1546793665-c74683f339c1?w=600&q=80",
     isAvailable: true,
     prepTimeMinutes: 10,
+    requiresPreparation: true,
   },
   {
     id: "item_greek",
@@ -46,6 +47,7 @@ export const menuItems: MenuItem[] = [
       "https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?w=600&q=80",
     isAvailable: true,
     prepTimeMinutes: 8,
+    requiresPreparation: true,
   },
   {
     id: "item_lagman",
@@ -59,6 +61,7 @@ export const menuItems: MenuItem[] = [
       "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=600&q=80",
     isAvailable: true,
     prepTimeMinutes: 18,
+    requiresPreparation: true,
   },
   {
     id: "item_mastava",
@@ -72,6 +75,7 @@ export const menuItems: MenuItem[] = [
       "https://images.unsplash.com/photo-1547592166-23ac45744acd?w=600&q=80",
     isAvailable: true,
     prepTimeMinutes: 15,
+    requiresPreparation: true,
   },
   {
     id: "item_plov",
@@ -85,6 +89,7 @@ export const menuItems: MenuItem[] = [
       "https://images.unsplash.com/photo-1596797038530-2c107229654b?w=600&q=80",
     isAvailable: true,
     prepTimeMinutes: 20,
+    requiresPreparation: true,
   },
   {
     id: "item_manti",
@@ -98,6 +103,7 @@ export const menuItems: MenuItem[] = [
       "https://images.unsplash.com/photo-1496116218417-1a781b1c416c?w=600&q=80",
     isAvailable: true,
     prepTimeMinutes: 22,
+    requiresPreparation: true,
   },
   {
     id: "item_steak",
@@ -111,6 +117,7 @@ export const menuItems: MenuItem[] = [
       "https://images.unsplash.com/photo-1600891964092-4316c288032e?w=600&q=80",
     isAvailable: true,
     prepTimeMinutes: 25,
+    requiresPreparation: true,
   },
   {
     id: "item_shashlik",
@@ -124,6 +131,7 @@ export const menuItems: MenuItem[] = [
       "https://images.unsplash.com/photo-1529042410759-befb1204b468?w=600&q=80",
     isAvailable: true,
     prepTimeMinutes: 20,
+    requiresPreparation: true,
   },
   {
     id: "item_cola",
@@ -137,6 +145,7 @@ export const menuItems: MenuItem[] = [
       "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=600&q=80",
     isAvailable: true,
     prepTimeMinutes: 1,
+    requiresPreparation: false,
   },
   {
     id: "item_compote",
@@ -150,6 +159,7 @@ export const menuItems: MenuItem[] = [
       "https://images.unsplash.com/photo-1622597467836-f3285f2131b8?w=600&q=80",
     isAvailable: true,
     prepTimeMinutes: 2,
+    requiresPreparation: false,
   },
   {
     id: "item_cheesecake",
@@ -163,6 +173,7 @@ export const menuItems: MenuItem[] = [
       "https://images.unsplash.com/photo-1533134242443-d4fd215305ad?w=600&q=80",
     isAvailable: true,
     prepTimeMinutes: 5,
+    requiresPreparation: false,
   },
   {
     id: "item_honey_cake",
@@ -176,6 +187,7 @@ export const menuItems: MenuItem[] = [
       "https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=600&q=80",
     isAvailable: true,
     prepTimeMinutes: 5,
+    requiresPreparation: false,
   },
 ];
 

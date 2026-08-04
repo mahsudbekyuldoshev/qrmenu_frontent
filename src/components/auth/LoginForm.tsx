@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { useState, type FormEvent } from "react";
-import { api } from "@/lib/api";
+import { authService } from "@/lib/services/auth.service";
 import { roleHomePath, useAuthStore } from "@/store/auth-store";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
@@ -53,12 +53,13 @@ export function LoginForm() {
 
     setLoading(true);
     try {
-      const auth = await api.login({
-        email: cleanPhone + "@restoflow.uz", // Backend still expects email for now, or I should update API
+      const auth = await authService.login({
+        phone: cleanPhone,
+        email: cleanPhone + "@restoflow.uz",
         password,
-      });
-      setSession(auth);
-      router.push(roleHomePath(auth.user.role));
+      } as any);
+      setSession(auth.data);
+      router.push(roleHomePath(auth.data.user.role));
     } catch (err) {
       setError(err instanceof Error ? err.message : t.login);
     } finally {

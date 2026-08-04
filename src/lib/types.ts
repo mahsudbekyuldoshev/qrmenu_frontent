@@ -63,6 +63,7 @@ export interface MenuItem {
   price: string | number;
   image: string | null;
   is_available: boolean;
+  requiresPreparation: boolean; // Add this
   // legacy compat fields
   categoryId?: string;
   nameUz?: string;
@@ -132,6 +133,8 @@ export interface TableStatus {
   turnoverToday?: number;
 }
 
+export type EmploymentStatus = "working" | "fired" | "resigned";
+
 export interface StaffMember {
   id: string;
   fullName: string;
@@ -139,6 +142,7 @@ export interface StaffMember {
   birthYear: number;
   salary: number;
   role: StaffRole;
+  employmentStatus: EmploymentStatus;
 }
 
 export interface Manager extends StaffMember {

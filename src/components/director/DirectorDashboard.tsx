@@ -20,7 +20,8 @@ import {
   Calendar,
   DollarSign
 } from "lucide-react";
-import { api } from "@/lib/api";
+import { orderService } from "@/lib/services/order.service";
+import { dashboardService } from "@/lib/services/dashboard.service";
 import { useWebSocket } from "@/hooks/useWebSocket";
 import type { DashboardStats, Order, TableStatus, WsEvent, Manager, Waiter, Chef } from "@/lib/types";
 import { formatMoney, formatTime, statusLabel } from "@/lib/utils";
@@ -416,7 +417,7 @@ function StaffTable({ title, data, canEdit, onAdd, onEdit, onDelete, t }: {
                         <tr>
                             <th className="p-6 text-[var(--muted)] font-bold uppercase text-xs tracking-widest">{t.fullName}</th>
                             <th className="p-6 text-[var(--muted)] font-bold uppercase text-xs tracking-widest">{t.joinedDate}</th>
-                            <th className="p-6 text-[var(--muted)] font-bold uppercase text-xs tracking-widest">{t.birthYear}</th>
+                            <th className="p-6 text-[var(--muted)] font-bold uppercase text-xs tracking-widest">{t.status}</th>
                             <th className="p-6 text-[var(--muted)] font-bold uppercase text-xs tracking-widest">{t.salary}</th>
                             {canEdit && <th className="p-6"></th>}
                         </tr>
@@ -426,7 +427,20 @@ function StaffTable({ title, data, canEdit, onAdd, onEdit, onDelete, t }: {
                             <tr key={person.id} className="hover:bg-[var(--surface-2)]/50 transition">
                                 <td className="p-6 font-bold text-[var(--ink)]">{person.fullName}</td>
                                 <td className="p-6 text-[var(--muted)]">{person.joinedDate}</td>
-                                <td className="p-6 text-[var(--muted)]">{person.birthYear}</td>
+                                <td className="p-6">
+                                  <select 
+                                    className="bg-transparent text-sm font-medium focus:outline-none"
+                                    value={person.employmentStatus || 'working'}
+                                    onChange={(e) => {
+                                       // TODO: Update status in API/State
+                                       console.log("Update status to", e.target.value);
+                                    }}
+                                  >
+                                    <option value="working">Ishlayapti</option>
+                                    <option value="fired">Ishdan haydaldi</option>
+                                    <option value="resigned">O'z xohishi bilan</option>
+                                  </select>
+                                </td>
                                 <td className="p-6 font-bold text-emerald-600">{formatMoney(person.salary)}</td>
                                 {canEdit && (
                                     <td className="p-6 text-right space-x-2">

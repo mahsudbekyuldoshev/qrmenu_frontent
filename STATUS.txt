@@ -96,3 +96,48 @@ O‘zgartirilgan:
     src/app/globals.css
     src/lib/translations.ts
     src/lib/types.ts
+
+
+
+Sana: 2026-08-04
+
+5. QILINGAN ISHLAR (2026-08-04 yangilanishi)
+--------------------------------------------
+
+5.1. Backend Integratsiyasi (Backend: Django + DRF + JWT)
+    - `.env.local` yaratildi (REAL API_URL sozlandi).
+    - `src/lib/axios.ts` yaratildi (Axios instansi + JWT interceptors).
+    - `src/lib/services/` (auth.service, menu.service, order.service) yaratildi.
+    - `api.ts` monolit faylidan modular service arxitekturasiga o'tildi.
+    - `useOrders.ts` hook'i `orderService`ga o'tkazildi.
+    - `ManagerDashboard` `menuService`ga o'tkazildi.
+    - `LoginForm` va `RegisterForm` `authService`ga o'tkazildi.
+    - `src/lib/types.ts` `requiresPreparation` va `EmploymentStatus` qo'shildi.
+
+5.2. Workflow yaxshilanishlari
+    - `WaiterBoard`: Audio xabarnoma va "To'lov" (Bill Request) uchun vizual ogohlantirish qo'shildi.
+    - `WaiterBoard`: Real-time chaqiruv sabablari ko'rsatiladigan qilindi.
+    - `Order` workflow: Tayyorlanmaydigan mahsulotlar (non, suv) to'g'ridan-to'g'ri `ready` statusida ofitsiantga tushadigan qilindi.
+    - Xodimlar boshqaruvi: `EmploymentStatus` (working, fired, resigned) qo'shildi.
+    - `SuperAdminDashboard`: Analitika (Obuna muddati, Pie chart) boyitildi.
+    - `SuperAdminDashboard`: CRUD funksiyalari (Restoran/Direktor) qo'shildi.
+
+5.3. Xatolar tuzatilishi
+    - Telefon raqami formatlash (`replace`) xatosi (`undefined` check) tuzatildi.
+    - `useState` import xatolari va `window is not defined` (Leaflet SSR) xatoliklari tuzatildi.
+    - `Recharts` import xatolari tuzatildi.
+
+
+
+--------------------Ertangi ishlar
+✦ Tizimni Django backend bilan integratsiya qilish jarayoni muvaffaqiyatli davom etmoqda. Bugun arxitekturani api.ts monolit faylidan modulyar services (auth, menu, order, dashboard) tizimiga o'tkazdik va asosiy dashboardlarni yangiladik.
+
+  Ertaga bajarilishi kerak bo'lgan vazifalar ro'yxati:
+
+   1. Qolgan komponentlarni yakunlash: QrMenuView va CartDrawer komponentlarini yangi servislar bilan to'liq moslashtirish.
+   2. Autentifikatsiyani mustahkamlash: axios.ts interceptor'ida 401 xatolik yuz berganda auth/refresh/ endpointi orqali tokenni avtomatik yangilash (refresh token) mexanizmini joriy qilish.
+   3. Tozalash: Barcha komponentlar yangi servislar bilan ishlashiga ishonch hosil qilgandan so'ng, eskirgan src/lib/api.ts va src/lib/mock-data.ts fayllarini tizimdan o'chirish.
+   4. Yakuniy test: Barcha Dashboardlar (Director, Manager, Super Admin, KDS, Waiter) real backend bilan muammosiz ishlayotganini sinovdan o'tkazish.
+
+  Hozircha shu. Ertaga ishni davom ettiramiz!
+

@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Bell, CheckCircle2, Minus, Plus, ShoppingBag, X } from "lucide-react";
-import { api } from "@/lib/api";
+import { Bell, CheckCircle2, DollarSign, Minus, Plus, ShoppingBag, X } from "lucide-react";
+import { orderService } from "@/lib/services/order.service";
 import { formatMoney } from "@/lib/utils";
 import { useCartStore } from "@/store/cart-store";
 import { Button } from "@/components/ui/Button";
@@ -23,7 +23,7 @@ export function CartDrawer({ tableNumber }: { tableNumber: number }) {
     setSubmitting(true);
     setSuccess(null);
     try {
-      await api.createOrder({
+      await orderService.createOrder({
         tableNumber,
         items: items.map((i) => ({
           menuItemId: i.menuItemId,
@@ -39,11 +39,12 @@ export function CartDrawer({ tableNumber }: { tableNumber: number }) {
     }
   }
 
-  async function callWaiter() {
+  async function callWaiter(reason: string = "Mijoz chaqirdi") {
     setCalling(true);
     try {
-      await api.callWaiter({ tableNumber, reason: "Mijoz chaqirdi" });
-      setSuccess("Ofitsiant chaqirildi. Tez orada keladi.");
+      // Assuming qrHash from somewhere? Will use table number as temp hack as in original code
+      await orderService.callWaiter(String(tableNumber), { reason });
+      setSuccess(reason === "bill_request" ? "To'lov so'rovi yuborildi." : "Ofitsiant chaqirildi. Tez orada keladi.");
       setOpen(true);
     } catch (e) {
       setSuccess(e instanceof Error ? e.message : "Chaqiruv yuborilmadi");
@@ -59,10 +60,19 @@ export function CartDrawer({ tableNumber }: { tableNumber: number }) {
         <Button
           variant="secondary"
           className="pointer-events-auto shadow-lg"
+          onClick={() => void callWaiter("bill_request")}
+          disabled={calling}
+        >
+          <DollarSign className="size-4 mr-2" />
+          To'lov
+        </Button>
+        <Button
+          variant="secondary"
+          className="pointer-events-auto shadow-lg"
           onClick={() => void callWaiter()}
           disabled={calling}
         >
-          <Bell className="size-4" />
+          <Bell className="size-4 mr-2" />
           Ofitsiant
         </Button>
         <Button

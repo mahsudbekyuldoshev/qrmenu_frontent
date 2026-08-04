@@ -2,28 +2,20 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { LayoutGrid, List, Moon, Sun } from "lucide-react";
-import { api } from "@/lib/api";
+import { menuService } from "@/lib/services/menu.service";
 import type { Category, MenuItem } from "@/lib/types";
 import { useCartStore } from "@/store/cart-store";
 import { usePreferences } from "@/providers/PreferencesProvider";
 import { CategoryTabs } from "./CategoryTabs";
 import { MenuItemCard } from "./MenuItemCard";
 import { CartDrawer } from "./CartDrawer";
-import { RESTAURANT_NAME } from "@/lib/mock-data";
+// import { RESTAURANT_NAME } from "@/lib/mock-data"; // TODO: Fetch from API
 import { Button } from "@/components/ui/Button";
 
 export function QrMenuView({ tableNumber, readOnly = false }: { tableNumber?: number, readOnly?: boolean }) {
   const [categories, setCategories] = useState<Category[]>([]);
   const [items, setItems] = useState<MenuItem[]>([]);
-  const [activeCategory, setActiveCategory] = useState<string | "all">("all");
-  const [loading, setLoading] = useState(true);
-  const [gridMode, setGridMode] = useState<"list" | "grid">("grid"); // Default to grid
-  const [currentPage, setCurrentPage] = useState(1);
-  const ITEMS_PER_PAGE = 8;
-
-  const setTable = useCartStore((s) => s.setTable);
-  const { theme, setTheme, t, menuBgImage } = usePreferences();
-
+  // ...
   useEffect(() => {
     let cancelled = false;
     if (tableNumber) {
@@ -33,12 +25,12 @@ export function QrMenuView({ tableNumber, readOnly = false }: { tableNumber?: nu
     async function fetchMenu() {
       try {
         const [cats, menu] = await Promise.all([
-          api.getCategories(),
-          api.getMenu(tableNumber),
+          menuService.getCategories(),
+          menuService.getDishes(),
         ]);
         if (cancelled) return;
-        setCategories(cats);
-        setItems(menu);
+        setCategories(cats.data);
+        setItems(menu.data);
       } finally {
         if (!cancelled) setLoading(false);
       }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { api } from "@/lib/api";
+import { orderService } from "@/lib/services/order.service";
 import type { Order, OrderStatus, WsEvent } from "@/lib/types";
 import { useWebSocket } from "./useWebSocket";
 
@@ -21,11 +21,9 @@ export function useOrders(filterStatuses?: OrderStatus[]) {
           statusKey === "all"
             ? undefined
             : (statusKey.split(",") as OrderStatus[]);
-        const data = await api.getOrders(
-          statuses ? { status: statuses } : undefined,
-        );
+        const res = await orderService.getOrders(statuses);
         if (cancelled) return;
-        setOrders(data);
+        setOrders(res.data);
         setError(null);
       } catch (e) {
         if (cancelled) return;
@@ -62,9 +60,10 @@ export function useOrders(filterStatuses?: OrderStatus[]) {
 
   const updateStatus = useCallback(
     async (orderId: string, status: OrderStatus) => {
-      const updated = await api.updateOrderStatus(orderId, status);
+      const res = await orderService.updateStatus(orderId, status);
+      const updated = res.data;
       setOrders((prev) => {
-        const next = prev.map((o) => (o.id === orderId ? updated : o));
+        const next = prev.map((o) => (String(o.id) === String(orderId) ? updated : o));
         if (statusKey === "all") return next;
         const allowed = statusKey.split(",") as OrderStatus[];
         return next.filter((o) => allowed.includes(o.status));

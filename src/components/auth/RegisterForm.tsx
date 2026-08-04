@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { useState, type FormEvent } from "react";
-import { api } from "@/lib/api";
+import { authService } from "@/lib/services/auth.service";
 import type { StaffRole } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { roleHomePath, useAuthStore } from "@/store/auth-store";
@@ -67,15 +67,17 @@ export function RegisterForm() {
     setLoading(true);
     try {
       const cleanPhone = phone.replace(/\s/g, "");
-      const auth = await api.register({
+      const auth = await authService.register({
+        phone: cleanPhone,
         email: cleanPhone + "@restoflow.uz",
         password,
-        fullName: fullName.trim(),
+        full_name: fullName.trim(),
+        fullName: fullName.trim(), // for backward compatibility
         restaurantName: "My Restaurant", // Defaulting since it was removed from UI
         role,
-      });
-      setSession(auth);
-      router.push(roleHomePath(auth.user.role));
+      } as any);
+      setSession(auth.data);
+      router.push(roleHomePath(auth.data.user.role));
     } catch (err) {
       setError(
         err instanceof Error ? err.message : t.register,

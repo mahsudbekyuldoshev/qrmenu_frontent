@@ -151,8 +151,8 @@ export const api = {
   async login(payload: LoginPayload): Promise<AuthResponse> {
     if (USE_MOCK) {
       await delay(350);
-      const phone = payload.phone.replace(/\D/g, "");
-      const account = mockAccounts.find((a) => a.phone === phone || a.phone === `+998${phone}`);
+      const phone = (payload.phone || "").replace(/\D/g, "");
+      const account = mockAccounts.find((a) => a.email?.includes(phone) || a.phone === phone || a.phone === `+998${phone}`);
       if (!account || account.password !== payload.password) {
         throw new Error("Telefon raqam yoki parol noto'g'ri");
       }
@@ -167,8 +167,9 @@ export const api = {
   async register(payload: RegisterPayload): Promise<AuthResponse> {
     if (USE_MOCK) {
       await delay(450);
+      const phone = (payload.phone || "").replace(/\D/g, "");
       const account: MockAccount = {
-        id: uid("usr") as unknown as number,
+        id: Math.floor(Math.random() * 1000000),
         phone: payload.phone,
         password: payload.password,
         first_name: payload.full_name?.split(" ")[0] ?? "",
@@ -217,17 +218,24 @@ export const api = {
           dish_name: menu.name ?? menu.nameUz ?? "",
           quantity: line.quantity,
           price: menu.price,
+          unitPrice: Number(menu.price),
           note: line.note,
         };
       });
+
+      const requiresKitchen = payload.items.some((line) => {
+        const menu = menuItems.find((m) => String(m.id) === String(line.menuItemId));
+        return menu?.requiresPreparation;
+      });
+
       const order: Order = {
         id: uid("ord") as unknown as number,
         restaurant: 0,
         restaurant_name: "",
         table: payload.tableNumber,
         table_number: payload.tableNumber,
-        status: "pending",
-        status_display: "Kutilmoqda",
+        status: requiresKitchen ? "pending" : "ready",
+        status_display: requiresKitchen ? "Kutilmoqda" : "Tayyor",
         total_price: items.reduce((s, i) => s + Number(i.price) * i.quantity, 0),
         items,
         created_at: new Date().toISOString(),
