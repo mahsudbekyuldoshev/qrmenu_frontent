@@ -1,15 +1,16 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import dynamic from "next/dynamic";
 import { 
   Building2, Plus, Users, LayoutDashboard, LogOut, Edit2, Trash2,
-  CheckCircle2, XCircle, ShieldCheck, CreditCard, DollarSign, TrendingUp
+  XCircle, ShieldCheck, CreditCard, TrendingUp, Loader2
 } from "lucide-react";
 import { 
     Area, AreaChart, Bar, BarChart, CartesianGrid, Pie, PieChart, Cell, 
     ResponsiveContainer, Tooltip, XAxis, YAxis 
 } from "recharts";
+import toast from "react-hot-toast";
 import { useAuthStore } from "@/store/auth-store";
 import { TopBar } from "@/components/chrome/TopBar";
 import { Button } from "@/components/ui/Button";
@@ -17,10 +18,14 @@ import { Input } from "@/components/ui/Input";
 import { useRouter } from "next/navigation";
 import { ThemeToggle } from "@/components/chrome/ThemeToggle";
 import { LanguageSelect } from "@/components/chrome/LanguageSelect";
-import type { Restaurant, Director } from "@/lib/types";
 import { usePreferences } from "@/providers/PreferencesProvider";
+import {
+  superAdminService,
+  type RestaurantApi,
+  type DirectorApi,
+  type AdminAnalyticsApi,
+} from "@/lib/services/super-admin.service";
 
-// Dynamically import map components to avoid SSR 'window' issues
 const Map = dynamic(() => import("./MapComponent"), { ssr: false });
 
 type Tab = "analytics" | "restaurants" | "directors";
@@ -30,19 +35,157 @@ export function SuperAdminDashboard() {
   const { t } = usePreferences();
   const [activeTab, setActiveTab] = useState<Tab>("analytics");
   const [showModal, setShowModal] = useState<"restaurant" | "director" | null>(null);
-  const [editingItem, setEditingItem] = useState<any>(null);
-  const [selectedLocation, setSelectedLocation] = useState<{ lat: number, lng: number } | null>(null);
+  const [editingItem, setEditingItem] = useState<RestaurantApi | DirectorApi | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [selectedLocation, setSelectedLocation] = useState<{ lat: number; lng: number } | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  const [restaurants, setRestaurants] = useState<Restaurant[]>([
-    { id: "1", name: "Rayhon Milliy Taomlar", address: "Toshkent, Chilonzor 4", subscriptionType: "Premium", daysLeft: 25, directorId: "d1", status: "active" },
-    { id: "2", name: "Osh Markazi", address: "Toshkent, Shayxontohur", subscriptionType: "Trial", daysLeft: 5, directorId: "d2", status: "active" },
-    { id: "3", name: "Evos Fast Food", address: "Toshkent, Mirobod", subscriptionType: "Premium", daysLeft: 120, directorId: "d3", status: "inactive" },
-  ]);
+  // Data from API
+  const [restaurants, setRestaurants] = useState<RestaurantApi[]>([]);
+  const [directors, setDirectors] = useState<DirectorApi[]>([]);
+  const [analytics, setAnalytics] = useState<AdminAnalyticsApi | null>(null);
 
-  const [directors, setDirectors] = useState<Director[]>([
-    { id: "d1", fullName: "Aziz Rahimov", phone: "+998 90 123 45 67", restaurantName: "Rayhon Milliy Taomlar", email: "aziz@mail.com", role: "director" },
-    { id: "d2", fullName: "Jamshid Karimov", phone: "+998 93 321 65 43", restaurantName: "Osh Markazi", email: "jamshid@mail.com", role: "director" },
-  ]);
+  // Restaurant modal: director selection
+  const [selectedDirectorId, setSelectedDirectorId] = useState<string>("__new__");
+  const [newDirName, setNewDirName] = useState("");
+  const [newDirPhone, setNewDirPhone] = useState("");
+
+  // Form refs
+  const restaurantNameRef = useRef<HTMLInputElement>(null);
+  const dirFirstRef = useRef<HTMLInputElement>(null);
+  const dirLastRef = useRef<HTMLInputElement>(null);
+  const dirPhoneRef = useRef<HTMLInputElement>(null);
+
+  // Biriktirilmagan direktorlar
+  const unassignedDirectors = directors.filter(d => !d.restaurant_id);
+  const existingDir = selectedDirectorId === "__new__" ? null : directors.find(d => String(d.id) === selectedDirectorId) ?? null;
+
+  // Dastlabki yuklash
+  useEffect(() => {
+    setLoading(true);
+    Promise.all([
+      superAdminService.getDashboard(),
+      superAdminService.getAnalytics(),
+    ]).then(([dashRes, analyticsRes]) => {
+      setRestaurants(dashRes.data.restaurants);
+      setDirectors(
+        dashRes.data.restaurants
+          .map(r => r.director)
+          .filter((d): d is DirectorApi => d !== null)
+          .concat(
+            // biriktirilmagan direktorlarni qo'shamiz
+          [] as DirectorApi[]
+          )
+      );
+      setAnalytics(analyticsRes.data);
+    }).catch(() => toast.error("Ma'lumotlarni yuklashda xatolik"))
+      .finally(() => setLoading(false));
+
+    // Biriktirilmagan direktorlarni alohida yuklash
+    superAdminService.getDirectors().then(res => setDirectors(res.data)).catch(() => {});
+  }, []);
+
+  function handleDirectorSelect(id: string) {
+    setSelectedDirectorId(id);
+    const dir = directors.find(d => String(d.id) === id);
+    setNewDirName(dir ? [dir.first_name, dir.last_name].filter(Boolean).join(" ") : "");
+    setNewDirPhone(dir?.phone ?? "");
+  }
+
+  function openRestaurantModal(item: RestaurantApi | null) {
+    setEditingItem(item);
+    setSelectedDirectorId("__new__");
+    setNewDirName("");
+    setNewDirPhone("");
+    setSelectedLocation(null);
+    setShowModal("restaurant");
+  }
+
+  async function handleSaveRestaurant() {
+    const name = restaurantNameRef.current?.value?.trim();
+    if (!name) return toast.error("Restoran nomi kiritilmagan");
+    setSaving(true);
+    try {
+      if (editingItem) {
+        // Tahrirlash
+        const updated = await superAdminService.updateRestaurant(Number((editingItem as RestaurantApi).id), { name });
+        setRestaurants(prev => prev.map(r => r.id === updated.data.id ? updated.data : r));
+      } else {
+        // Yangi restoran
+        const created = await superAdminService.createRestaurant({ name });
+        let finalRestaurant = created.data;
+
+        if (selectedDirectorId === "__new__" && newDirName) {
+          // Yangi direktor ham yaratamiz
+          const [first_name, ...rest] = newDirName.trim().split(" ");
+          const newDir = await superAdminService.createDirector({
+            phone: newDirPhone,
+            first_name,
+            last_name: rest.join(" "),
+          });
+          // Direktorni restoranga biriktiramiz
+          const assigned = await superAdminService.assignDirector(finalRestaurant.id, { director_id: newDir.data.id });
+          finalRestaurant = assigned.data;
+          setDirectors(prev => [...prev, newDir.data]);
+        } else if (selectedDirectorId !== "__new__") {
+          // Mavjud direktorni biriktiramiz
+          const assigned = await superAdminService.assignDirector(finalRestaurant.id, { director_id: Number(selectedDirectorId) });
+          finalRestaurant = assigned.data;
+        }
+        setRestaurants(prev => [finalRestaurant, ...prev]);
+      }
+      setShowModal(null);
+      toast.success(editingItem ? "Yangilandi" : "Restoran qo'shildi");
+    } catch (e: any) {
+      toast.error(e?.response?.data?.detail ?? "Saqlashda xatolik");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function handleSaveDirector() {
+    const first_name = dirFirstRef.current?.value?.trim() ?? "";
+    const last_name = dirLastRef.current?.value?.trim() ?? "";
+    const phone = dirPhoneRef.current?.value?.trim() ?? "";
+    if (!phone) return toast.error("Telefon raqam kiritilmagan");
+    setSaving(true);
+    try {
+      if (editingItem) {
+        const updated = await superAdminService.updateDirector(Number((editingItem as DirectorApi).id), { first_name, last_name });
+        setDirectors(prev => prev.map(d => d.id === updated.data.id ? updated.data : d));
+      } else {
+        const created = await superAdminService.createDirector({ phone, first_name, last_name });
+        setDirectors(prev => [created.data, ...prev]);
+        if (created.data.generated_password) {
+          toast.success(`Vaqtinchalik parol: ${created.data.generated_password}`, { duration: 10000 });
+        }
+      }
+      setShowModal(null);
+      toast.success(editingItem ? "Yangilandi" : "Direktor qo'shildi");
+    } catch (e: any) {
+      toast.error(e?.response?.data?.detail ?? "Saqlashda xatolik");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function handleDeleteRestaurant(id: number) {
+    if (!confirm("Restoranni o'chirishni tasdiqlaysizmi?")) return;
+    try {
+      await superAdminService.deleteRestaurant(id);
+      setRestaurants(prev => prev.filter(r => r.id !== id));
+      toast.success("O'chirildi");
+    } catch { toast.error("O'chirishda xatolik"); }
+  }
+
+  async function handleDeleteDirector(id: number) {
+    if (!confirm("Direktorni o'chirishni tasdiqlaysizmi?")) return;
+    try {
+      await superAdminService.deleteDirector(id);
+      setDirectors(prev => prev.filter(d => d.id !== id));
+      toast.success("O'chirildi");
+    } catch { toast.error("O'chirishda xatolik"); }
+  }
 
   const NavItem = ({ tab, label, icon: Icon }: { tab: Tab; label: string; icon: any }) => (
     <button
@@ -166,8 +309,8 @@ export function SuperAdminDashboard() {
                 <StaffTable
                     title={activeTab === "restaurants" ? t.restaurants : t.directors}
                     data={activeTab === "restaurants" ? restaurants : directors}
-                    onAdd={() => { setEditingItem(null); setShowModal(activeTab === "restaurants" ? "restaurant" : "director"); }}
-                    onEdit={(item) => { setEditingItem(item); setShowModal(activeTab === "restaurants" ? "restaurant" : "director"); }}
+                    onAdd={() => { if (activeTab === "restaurants") { openRestaurantModal(null); } else { setEditingItem(null); setShowModal("director"); } }}
+                    onEdit={(item) => { if (activeTab === "restaurants") { openRestaurantModal(item); } else { setEditingItem(item); setShowModal("director"); } }}
                     onDelete={(id) => activeTab === "restaurants" ? setRestaurants(prev => prev.filter(x => x.id !== id)) : setDirectors(prev => prev.filter(x => x.id !== id))}
                     t={t}
                 />
@@ -189,10 +332,47 @@ export function SuperAdminDashboard() {
 
                     {showModal === 'restaurant' ? (
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+                            {/* Left: form fields */}
                             <div className="space-y-6">
                                 <Input label={t.restaurantName} defaultValue={editingItem?.name} className="h-14 rounded-2xl border-2" />
                                 <Input label={t.address} value={selectedLocation ? `Lat: ${selectedLocation.lat.toFixed(4)}, Lng: ${selectedLocation.lng.toFixed(4)}` : editingItem?.address || ""} readOnly className="h-14 rounded-2xl border-2 bg-[var(--surface-2)]/50" />
+
+                                {/* Director select */}
+                                <div className="space-y-2">
+                                    <label className="block text-sm font-bold text-[var(--muted)] uppercase tracking-widest">Direktor</label>
+                                    <select
+                                        value={selectedDirectorId}
+                                        onChange={e => handleDirectorSelect(e.target.value)}
+                                        className="w-full h-14 rounded-2xl border-2 border-[var(--line)] bg-[var(--bg)] px-4 font-semibold text-[var(--ink)] focus:border-[var(--accent)] outline-none transition"
+                                    >
+                                        <option value="__new__">+ Yangi direktor</option>
+                                        {unassignedDirectors.map(d => (
+                                            <option key={d.id} value={d.id}>{d.fullName} — {d.phone}</option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                {/* F.I.Sh — always visible */}
+                                <Input
+                                    label="F.I.Sh."
+                                    value={newDirName}
+                                    onChange={e => !existingDir && setNewDirName(e.target.value)}
+                                    disabled={!!existingDir}
+                                    placeholder={existingDir ? "" : "Direktor to'liq ismi"}
+                                    className={`h-14 rounded-2xl border-2 transition ${existingDir ? "bg-[var(--surface-2)]/70 opacity-80 cursor-not-allowed" : ""}`}
+                                />
+
+                                {/* Telefon — always visible */}
+                                <Input
+                                    label="Telefon"
+                                    value={newDirPhone}
+                                    onChange={e => !existingDir && setNewDirPhone(e.target.value)}
+                                    disabled={!!existingDir}
+                                    placeholder={existingDir ? "" : "+998 xx xxx xx xx"}
+                                    className={`h-14 rounded-2xl border-2 transition ${existingDir ? "bg-[var(--surface-2)]/70 opacity-80 cursor-not-allowed" : ""}`}
+                                />
                             </div>
+                            {/* Right: map */}
                             <div className="aspect-square bg-[var(--bg)] rounded-[2.5rem] border-2 border-[var(--line)] overflow-hidden relative">
                                 <Map onLocationSelect={(lat, lng) => setSelectedLocation({ lat, lng })} markerPosition={selectedLocation} />
                             </div>

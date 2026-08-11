@@ -129,7 +129,7 @@ Sana: 2026-08-04
 
 
 
---------------------Ertangi ishlar
+--------------------qilinadigan  ishlar
 ✦ Tizimni Django backend bilan integratsiya qilish jarayoni muvaffaqiyatli davom etmoqda. Bugun arxitekturani api.ts monolit faylidan modulyar services (auth, menu, order, dashboard) tizimiga o'tkazdik va asosiy dashboardlarni yangiladik.
 
   Ertaga bajarilishi kerak bo'lgan vazifalar ro'yxati:
@@ -139,5 +139,4 @@ Sana: 2026-08-04
    3. Tozalash: Barcha komponentlar yangi servislar bilan ishlashiga ishonch hosil qilgandan so'ng, eskirgan src/lib/api.ts va src/lib/mock-data.ts fayllarini tizimdan o'chirish.
    4. Yakuniy test: Barcha Dashboardlar (Director, Manager, Super Admin, KDS, Waiter) real backend bilan muammosiz ishlayotganini sinovdan o'tkazish.
 
-  Hozircha shu. Ertaga ishni davom ettiramiz!
 

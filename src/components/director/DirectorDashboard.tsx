@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { orderService } from "@/lib/services/order.service";
 import { dashboardService } from "@/lib/services/dashboard.service";
+import { staffService, type StaffApiItem } from "@/lib/services/staff.service";
 import { useWebSocket } from "@/hooks/useWebSocket";
 import type { DashboardStats, Order, TableStatus, WsEvent, Manager, Waiter, Chef } from "@/lib/types";
 import { formatMoney, formatTime, statusLabel } from "@/lib/utils";
@@ -62,20 +63,10 @@ export function DirectorDashboard() {
   const [reloadToken, setReloadToken] = useState(0);
   const [activeTab, setActiveTab] = useState<DirectorTab>("analytics");
 
-  const [managers, setManagers] = useState<Manager[]>([
-    { id: "1", fullName: "Alisher Valiyev", joinedDate: "2023-01-15", birthYear: 1990, salary: 5000000, role: "manager" },
-    { id: "2", fullName: "Nigora Karimova", joinedDate: "2023-05-20", birthYear: 1995, salary: 4500000, role: "manager" },
-  ]);
-
-  const [waiters, setWaiters] = useState<Waiter[]>([
-    { id: "3", fullName: "Javohir Toshmatov", joinedDate: "2023-06-10", birthYear: 2000, salary: 3000000, role: "waiter" },
-    { id: "4", fullName: "Madina Soliyeva", joinedDate: "2023-08-12", birthYear: 2001, salary: 3000000, role: "waiter" },
-  ]);
-
-  const [chefs, setChefs] = useState<Chef[]>([
-    { id: "5", fullName: "Rustam Ahmedov", joinedDate: "2022-11-01", birthYear: 1985, salary: 7000000, role: "kitchen" },
-    { id: "6", fullName: "Zilola Umarova", joinedDate: "2023-03-15", birthYear: 1988, salary: 6500000, role: "kitchen" },
-  ]);
+  const [managers, setManagers] = useState<Manager[]>([]);
+  const [waiters, setWaiters] = useState<Waiter[]>([]);
+  const [chefs, setChefs] = useState<Chef[]>([]);
+  const [staffLoading, setStaffLoading] = useState(true);
 
   useEffect(() => {
     if (user && user.role !== "director") {
@@ -83,52 +74,101 @@ export function DirectorDashboard() {
     }
   }, [user, router]);
 
+  // Xodimlarni backend dan yuklash
+  useEffect(() => {
+    setStaffLoading(true);
+    staffService.getAll()
+      .then(({ data }) => {
+        const toMember = (item: StaffApiItem) => ({
+          id: String(item.id),
+          fullName: [item.first_name, item.last_name].filter(Boolean).join(" ") || item.phone,
+          joinedDate: item.date_joined.split("T")[0],
+          birthYear: 0,
+          salary: 0,
+          role: item.role as "manager" | "waiter" | "kitchen",
+          employmentStatus: item.employment_status as "working" | "fired" | "resigned",
+        });
+        setManagers(data.filter(x => x.role === "manager").map(toMember) as Manager[]);
+        setWaiters(data.filter(x => x.role === "waiter").map(toMember) as Waiter[]);
+        setChefs(data.filter(x => x.role === "chef").map(toMember) as Chef[]);
+      })
+      .catch(() => {
+        // Auth yoki network xatoligi — bo'sh ro'yxat bilan davom etamiz
+      })
+      .finally(() => setStaffLoading(false));
+  }, []);
+
   useEffect(() => {
     let cancelled = false;
 
     async function fetchDashboard() {
-      const [s, o, t] = await Promise.all([
-        api.getDashboardStats(),
-        api.getOrders(),
-        api.getTables(),
-      ]);
-      if (cancelled) return;
-      
-      // Mocking additional stats for the new dashboard
-      const extendedStats: DashboardStats = {
-        ...s,
-        totalEmployees: managers.length + waiters.length + chefs.length,
-        totalMonthlySalary: [...managers, ...waiters, ...chefs].reduce((acc, curr) => acc + curr.salary, 0),
-        revenueByDay: [
-            { day: "Du", amount: 1200000 },
-            { day: "Se", amount: 1500000 },
-            { day: "Ch", amount: 1100000 },
-            { day: "Pa", amount: 1800000 },
-            { day: "Ju", amount: 2200000 },
-            { day: "Sh", amount: 2800000 },
-            { day: "Ya", amount: 2500000 },
-        ],
-        revenueByWeek: [
-            { week: "Hafta 1", amount: 12000000 },
-            { week: "Hafta 2", amount: 15000000 },
-            { week: "Hafta 3", amount: 14000000 },
-            { week: "Hafta 4", amount: 18000000 },
-        ]
-      };
+      try {
+        const [ordersRes, tablesRes] = await Promise.all([
+          orderService.getOrders(),
+          dashboardService.getTables(),
+        ]);
+        if (cancelled) return;
 
-      setStats(extendedStats);
-      setOrders(
-        o.filter((x) => !["delivered", "cancelled"].includes(x.status)),
-      );
-      setTables(t);
-      setLoading(false);
+        // Dashboard stats: agar backend endpoint bo'lsa ishlatamiz,
+        // aks holda orders va table dan hisoblaymiz.
+        let statsData: DashboardStats;
+        try {
+          const { data: s } = await dashboardService.getStats();
+          statsData = {
+            ...s,
+            revenueByDay: s.revenueByDay?.length ? s.revenueByDay : [
+              { day: "Du", amount: 0 }, { day: "Se", amount: 0 },
+              { day: "Ch", amount: 0 }, { day: "Pa", amount: 0 },
+              { day: "Ju", amount: 0 }, { day: "Sh", amount: 0 },
+              { day: "Ya", amount: 0 },
+            ],
+            revenueByWeek: s.revenueByWeek?.length ? s.revenueByWeek : [
+              { week: "Hafta 1", amount: 0 }, { week: "Hafta 2", amount: 0 },
+              { week: "Hafta 3", amount: 0 }, { week: "Hafta 4", amount: 0 },
+            ],
+          };
+        } catch {
+          // /dashboard/stats/ hali mavjud bo'lmasligi mumkin — fallback
+          const allOrders = ordersRes.data;
+          statsData = {
+            todayRevenue: allOrders.reduce((s, o) => s + Number(o.total_price ?? 0), 0),
+            todayOrders: allOrders.length,
+            activeOrders: allOrders.filter(o => !["delivered", "cancelled"].includes(o.status)).length,
+            averageOrderValue: allOrders.length
+              ? allOrders.reduce((s, o) => s + Number(o.total_price ?? 0), 0) / allOrders.length
+              : 0,
+            occupiedTables: tablesRes.data.filter(t => t.is_active).length,
+            totalTables: tablesRes.data.length,
+            revenueByHour: [],
+            revenueByDay: [
+              { day: "Du", amount: 0 }, { day: "Se", amount: 0 },
+              { day: "Ch", amount: 0 }, { day: "Pa", amount: 0 },
+              { day: "Ju", amount: 0 }, { day: "Sh", amount: 0 },
+              { day: "Ya", amount: 0 },
+            ],
+            revenueByWeek: [
+              { week: "Hafta 1", amount: 0 }, { week: "Hafta 2", amount: 0 },
+              { week: "Hafta 3", amount: 0 }, { week: "Hafta 4", amount: 0 },
+            ],
+            topItems: [],
+            totalEmployees: managers.length + waiters.length + chefs.length,
+            totalMonthlySalary: 0,
+          };
+        }
+
+        setStats(statsData);
+        setOrders(ordersRes.data.filter(x => !["delivered", "cancelled"].includes(x.status)));
+        setTables(tablesRes.data);
+      } catch {
+        // silent fail — loading holati davom etadi
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
     }
 
     void fetchDashboard();
-    return () => {
-      cancelled = true;
-    };
-  }, [reloadToken, managers, waiters, chefs]);
+    return () => { cancelled = true; };
+  }, [reloadToken]);
 
   const onEvent = useCallback((event: WsEvent) => {
     if (
@@ -342,10 +382,7 @@ export function DirectorDashboard() {
                     <StaffTable
                         title={t.managers}
                         data={managers}
-                        canEdit={true}
-                        onAdd={() => alert(t.addManager)}
-                        onEdit={(m) => alert(`${t.editManager}: ${m.fullName}`)}
-                        onDelete={(id) => setManagers(prev => prev.filter(m => m.id !== id))}
+                        canEdit={false}
                         t={t}
                     />
                 )}
