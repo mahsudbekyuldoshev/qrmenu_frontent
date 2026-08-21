@@ -26,7 +26,8 @@ export const useCartStore = create<CartState>()(
 
       addItem: (item, quantity = 1) => {
         const items = [...get().items];
-        const idx = items.findIndex((i) => i.menuItemId === item.id);
+        const itemId = String(item.id);
+        const idx = items.findIndex((i) => i.menuItemId === itemId);
         if (idx >= 0) {
           items[idx] = {
             ...items[idx],
@@ -34,10 +35,10 @@ export const useCartStore = create<CartState>()(
           };
         } else {
           items.push({
-            menuItemId: item.id,
-            name: item.name,
-            nameUz: item.nameUz,
-            price: item.price,
+            menuItemId: itemId,
+            name: item.name || item.nameUz || "",
+            nameUz: item.nameUz || item.name || "",
+            price: Number(item.price) || 0,
             quantity,
           });
         }
@@ -45,16 +46,17 @@ export const useCartStore = create<CartState>()(
       },
 
       removeItem: (menuItemId) =>
-        set({ items: get().items.filter((i) => i.menuItemId !== menuItemId) }),
+        set({ items: get().items.filter((i) => i.menuItemId !== String(menuItemId)) }),
 
       setQuantity: (menuItemId, quantity) => {
+        const idStr = String(menuItemId);
         if (quantity <= 0) {
-          get().removeItem(menuItemId);
+          get().removeItem(idStr);
           return;
         }
         set({
           items: get().items.map((i) =>
-            i.menuItemId === menuItemId ? { ...i, quantity } : i,
+            i.menuItemId === idStr ? { ...i, quantity } : i,
           ),
         });
       },
@@ -62,7 +64,7 @@ export const useCartStore = create<CartState>()(
       clear: () => set({ items: [] }),
 
       total: () =>
-        get().items.reduce((sum, i) => sum + i.price * i.quantity, 0),
+        get().items.reduce((sum, i) => sum + (Number(i.price) || 0) * i.quantity, 0),
 
       count: () => get().items.reduce((sum, i) => sum + i.quantity, 0),
     }),

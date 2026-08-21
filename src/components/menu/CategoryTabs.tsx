@@ -16,16 +16,15 @@ export function CategoryTabs({
   const { t, language } = usePreferences();
   
   const getLabel = (c: Category) => {
-      if (language === 'ru') return c.nameRu;
-      if (language === 'en') return c.nameEn;
-      return c.nameUz;
-  }
+    if (language === 'ru') return c.nameRu || c.name;
+    if (language === 'en') return c.nameEn || c.name;
+    return c.nameUz || c.name;
+  };
   
   const tabs: { id: string | "all"; label: string }[] = [
-    { id: "all", label: t.all },
-    ...categories.map((c) => ({ id: c.id, label: getLabel(c) })),
+    { id: "all", label: t.all || "Barchasi" },
+    ...categories.map((c) => ({ id: String(c.id), label: getLabel(c) })),
   ];
-
 
   return (
     <div className="sticky top-[3.75rem] z-20 -mx-4 overflow-x-auto border-b border-[var(--line)] bg-[var(--bg)]/80 px-4 py-3 backdrop-blur-md">

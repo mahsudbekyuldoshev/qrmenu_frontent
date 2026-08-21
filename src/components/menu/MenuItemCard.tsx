@@ -16,14 +16,30 @@ interface MenuItemCardProps {
 
 export function MenuItemCard({ item, layout = "list", readOnly = false }: MenuItemCardProps) {
   const { language } = usePreferences();
+  const itemIdStr = String(item.id);
   const cartItem = useCartStore((s) =>
-    s.items.find((i) => i.menuItemId === item.id),
+    s.items.find((i) => i.menuItemId === itemIdStr),
   );
   const addItem = useCartStore((s) => s.addItem);
   const setQuantity = useCartStore((s) => s.setQuantity);
 
-  const name = language === 'ru' ? item.nameRu : language === 'en' ? item.nameEn : item.nameUz;
-  const description = language === 'ru' ? item.descriptionRu : language === 'en' ? item.descriptionEn : item.descriptionUz;
+  const name =
+    (language === "ru" ? item.nameRu : language === "en" ? item.nameEn : item.nameUz) ||
+    item.name ||
+    "Taom";
+  const description =
+    (language === "ru"
+      ? item.descriptionRu
+      : language === "en"
+      ? item.descriptionEn
+      : item.descriptionUz) ||
+    item.description ||
+    "";
+
+  const isAvailable = item.is_available ?? item.isAvailable ?? true;
+  const price = Number(item.price) || 0;
+  const imageUrl = item.imageUrl || item.image || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&q=80";
+  const prepTime = item.prepTimeMinutes ?? 0;
 
   if (layout === "grid") {
     return (
@@ -31,13 +47,13 @@ export function MenuItemCard({ item, layout = "list", readOnly = false }: MenuIt
         {/* Image */}
         <div className="relative aspect-[4/3] overflow-hidden bg-[var(--surface-2)]">
           <Image
-            src={item.imageUrl}
+            src={imageUrl}
             alt={name}
             fill
             sizes="(max-width: 640px) 50vw, 200px"
             className="object-cover transition duration-500 group-hover:scale-105"
           />
-          {!item.isAvailable && (
+          {!isAvailable && (
             <div className="absolute inset-0 flex items-center justify-center bg-[var(--bg)]/70 backdrop-blur-sm">
               <span className="rounded-full bg-[var(--surface)] px-3 py-1 text-xs font-medium text-[var(--muted)]">
                 Mavjud emas
@@ -58,13 +74,13 @@ export function MenuItemCard({ item, layout = "list", readOnly = false }: MenuIt
           )}
           <div className="mt-auto flex items-center justify-between gap-2 pt-3">
             <span className="text-sm font-bold text-[var(--ink)]">
-              {formatMoney(item.price)}
+              {formatMoney(price)}
             </span>
             {!readOnly && (
               !cartItem ? (
                 <button
                   type="button"
-                  disabled={!item.isAvailable}
+                  disabled={!isAvailable}
                   onClick={() => addItem(item)}
                   className="grid size-8 place-items-center rounded-xl bg-[var(--accent)] text-[var(--accent-fg)] transition hover:brightness-110 active:scale-95 disabled:opacity-40"
                   aria-label={`${name} qo'shish`}
@@ -77,7 +93,7 @@ export function MenuItemCard({ item, layout = "list", readOnly = false }: MenuIt
                     type="button"
                     aria-label="Kamaytirish"
                     className="grid size-6 place-items-center rounded-lg bg-[var(--bg)] text-[var(--ink)] transition hover:bg-[var(--surface-3)]"
-                    onClick={() => setQuantity(item.id, cartItem.quantity - 1)}
+                    onClick={() => setQuantity(itemIdStr, cartItem.quantity - 1)}
                   >
                     <Minus className="size-3" />
                   </button>
@@ -88,7 +104,7 @@ export function MenuItemCard({ item, layout = "list", readOnly = false }: MenuIt
                     type="button"
                     aria-label="Ko'paytirish"
                     className="grid size-6 place-items-center rounded-lg bg-[var(--accent)] text-[var(--accent-fg)] transition hover:brightness-110"
-                    onClick={() => setQuantity(item.id, cartItem.quantity + 1)}
+                    onClick={() => setQuantity(itemIdStr, cartItem.quantity + 1)}
                   >
                     <Plus className="size-3" />
                   </button>
@@ -113,25 +129,25 @@ export function MenuItemCard({ item, layout = "list", readOnly = false }: MenuIt
             {description}
           </p>
         )}
-        {item.prepTimeMinutes > 0 && (
+        {prepTime > 0 && (
           <p className="mt-1.5 text-xs text-[var(--muted)]/70">
-            ~{item.prepTimeMinutes} daqiqa
+            ~{prepTime} daqiqa
           </p>
         )}
         <div className="mt-auto flex items-center justify-between gap-2 pt-3">
           <span className="text-base font-bold text-[var(--ink)]">
-            {formatMoney(item.price)}
+            {formatMoney(price)}
           </span>
           {!readOnly && (
             !cartItem ? (
               <Button
                 size="sm"
-                disabled={!item.isAvailable}
+                disabled={!isAvailable}
                 onClick={() => addItem(item)}
                 className="min-w-[5.5rem]"
               >
                 <Plus className="size-4" />
-                {item.isAvailable ? "Qo\u02BBshish" : "Mavjud emas"}
+                {isAvailable ? "Qo\u02BBshish" : "Mavjud emas"}
               </Button>
             ) : (
               <div className="flex items-center gap-2 rounded-xl bg-[var(--surface)] p-1">
@@ -139,7 +155,7 @@ export function MenuItemCard({ item, layout = "list", readOnly = false }: MenuIt
                   type="button"
                   aria-label="Kamaytirish"
                   className="grid size-8 place-items-center rounded-lg bg-[var(--bg)] text-[var(--ink)] transition hover:bg-[var(--surface-2)]"
-                  onClick={() => setQuantity(item.id, cartItem.quantity - 1)}
+                  onClick={() => setQuantity(itemIdStr, cartItem.quantity - 1)}
                 >
                   <Minus className="size-4" />
                 </button>
@@ -150,7 +166,7 @@ export function MenuItemCard({ item, layout = "list", readOnly = false }: MenuIt
                   type="button"
                   aria-label="Ko'paytirish"
                   className="grid size-8 place-items-center rounded-lg bg-[var(--accent)] text-[var(--accent-fg)] transition hover:brightness-110"
-                  onClick={() => setQuantity(item.id, cartItem.quantity + 1)}
+                  onClick={() => setQuantity(itemIdStr, cartItem.quantity + 1)}
                 >
                   <Plus className="size-4" />
                 </button>
@@ -160,13 +176,13 @@ export function MenuItemCard({ item, layout = "list", readOnly = false }: MenuIt
         </div>
       </div>
       <div className="relative aspect-square overflow-hidden rounded-2xl bg-[var(--surface)]">
-        {!item.isAvailable && (
+        {!isAvailable && (
           <div className="absolute inset-0 z-10 flex items-center justify-center bg-[var(--bg)]/60 backdrop-blur-sm">
             <span className="text-xs text-[var(--muted)]">Mavjud emas</span>
           </div>
         )}
         <Image
-          src={item.imageUrl}
+          src={imageUrl}
           alt={name}
           fill
           sizes="120px"

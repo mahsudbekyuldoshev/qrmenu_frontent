@@ -5,7 +5,7 @@ import { subscribeLocalEvents } from "@/lib/api";
 import type { WsEvent, WsEventType } from "@/lib/types";
 
 const WS_URL = process.env.NEXT_PUBLIC_WS_URL ?? "ws://localhost:8000/ws/orders/";
-const USE_MOCK = process.env.NEXT_PUBLIC_USE_MOCK !== "false";
+const USE_MOCK = process.env.NEXT_PUBLIC_USE_MOCK === "true";
 
 export interface UseWebSocketOptions {
   onEvent?: (event: WsEvent) => void;

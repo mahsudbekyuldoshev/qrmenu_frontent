@@ -1,25 +1,27 @@
 import type { Metadata } from "next";
-import { Manrope, Syne } from "next/font/google";
+import { Plus_Jakarta_Sans, Inter } from "next/font/google";
 import { Toaster } from "react-hot-toast";
 import "./globals.css";
 import { PreferencesProvider } from "@/providers/PreferencesProvider";
 
-const display = Syne({
+const display = Plus_Jakarta_Sans({
   variable: "--font-display",
-  subsets: ["latin"],
+  subsets: ["latin", "latin-ext"],
   weight: ["500", "600", "700", "800"],
+  display: "swap",
 });
 
-const body = Manrope({
+const body = Inter({
   variable: "--font-body",
-  subsets: ["latin"],
+  subsets: ["latin", "cyrillic"],
   weight: ["400", "500", "600", "700"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "RestoFlow — QR Menu, KDS & Dashboard",
+  title: "RestoFlow — Restoran Boshqaruvi & QR-Menyu SaaS",
   description:
-    "Restoranlar uchun QR-menyu, oshxona displeyi (KDS) va direktor paneli.",
+    "Restoranlar uchun QR-menyu, oshxona displeyi (KDS), ofitsiant stansiyasi va direktor paneli.",
 };
 
 export default function RootLayout({
@@ -34,7 +36,7 @@ export default function RootLayout({
       data-scroll-behavior="smooth"
       className={`${display.variable} ${body.variable} h-full`}
     >
-      <body className="min-h-full antialiased">
+      <body className="min-h-full antialiased font-sans">
         <Toaster position="top-right" />
         <PreferencesProvider>{children}</PreferencesProvider>
       </body>

@@ -17,8 +17,10 @@ export function OrderTicket({
   onStatusChange: (status: Order["status"]) => void;
   busy?: boolean;
 }) {
-  const mins = elapsedMinutes(order.createdAt);
+  const createdAt = order.created_at || (order as any).createdAt || "";
+  const mins = elapsedMinutes(createdAt);
   const urgent = mins >= 15;
+  const tableNum = order.table_number ?? (order as any).tableNumber ?? order.table;
 
   return (
     <article
@@ -31,7 +33,7 @@ export function OrderTicket({
       <div className="mb-3 flex items-start justify-between gap-2">
         <div>
           <p className="font-[family-name:var(--font-display)] text-2xl text-[var(--ink)]">
-            Stol {order.tableNumber}
+            Stol {tableNum}
           </p>
           <p
             className={`mt-1 flex items-center gap-1.5 text-xs ${
@@ -39,7 +41,7 @@ export function OrderTicket({
             }`}
           >
             <Clock className="size-3.5" />
-            {formatTime(order.createdAt)} · {mins} daqiqa
+            {formatTime(createdAt)} · {mins} daqiqa
             {urgent && " ⚠"}
           </p>
         </div>
@@ -47,24 +49,28 @@ export function OrderTicket({
       </div>
 
       <ul className="mb-4 space-y-2 border-y border-[var(--line)] py-3">
-        {order.items.map((item) => (
-          <li key={item.id} className="flex justify-between gap-3 text-sm">
-            <span className="text-[var(--ink)]">
-              <span className="mr-2 inline-grid size-6 place-items-center rounded-md bg-[var(--accent)]/15 text-xs font-bold text-[var(--accent)]">
-                {item.quantity}
+        {order.items?.map((item) => {
+          const name = item.dish_name || item.nameUz || (item as any).name || "Taom";
+          const price = Number(item.price ?? (item as any).unitPrice ?? 0);
+          return (
+            <li key={item.id} className="flex justify-between gap-3 text-sm">
+              <span className="text-[var(--ink)]">
+                <span className="mr-2 inline-grid size-6 place-items-center rounded-md bg-[var(--accent)]/15 text-xs font-bold text-[var(--accent)]">
+                  {item.quantity}
+                </span>
+                {name}
               </span>
-              {item.nameUz}
-            </span>
-            <span className="shrink-0 text-[var(--muted)]">
-              {formatMoney(item.unitPrice * item.quantity)}
-            </span>
-          </li>
-        ))}
+              <span className="shrink-0 text-[var(--muted)]">
+                {formatMoney(price * item.quantity)}
+              </span>
+            </li>
+          );
+        })}
       </ul>
 
-      {order.notes && (
+      {(order.comment || (order as any).notes) && (
         <p className="mb-3 rounded-lg bg-amber-500/10 px-3 py-2 text-xs text-amber-600 dark:text-amber-400">
-          📝 {order.notes}
+          📝 {order.comment || (order as any).notes}
         </p>
       )}
 

@@ -1,8 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Radio, RefreshCw, LogOut } from "lucide-react";
-import Link from "next/link";
+import { useState } from "react";
+import { Radio, RefreshCw, LogOut, UserCircle } from "lucide-react";
 import { useOrders } from "@/hooks/useOrders";
 import { OrderTicket } from "./OrderTicket";
 import { Button } from "@/components/ui/Button";
@@ -10,19 +9,21 @@ import { ThemeToggle } from "@/components/chrome/ThemeToggle";
 import type { OrderStatus } from "@/lib/types";
 import { usePreferences } from "@/providers/PreferencesProvider";
 import { useAuthStore } from "@/store/auth-store";
+import { useRouter } from "next/navigation";
 
 const KITCHEN_STATUSES: OrderStatus[] = ["pending", "preparing"];
 
 export function KdsBoard() {
   const { t } = usePreferences();
+  const router = useRouter();
   const { orders, loading, error, connected, refresh, updateStatus } =
     useOrders(KITCHEN_STATUSES);
-  const [busyId, setBusyId] = useState<string | null>(null);
+  const [busyId, setBusyId] = useState<string | number | null>(null);
 
   const pending = orders.filter((o) => o.status === "pending");
   const preparing = orders.filter((o) => o.status === "preparing");
 
-  async function changeStatus(orderId: string, status: OrderStatus) {
+  async function changeStatus(orderId: string | number, status: OrderStatus) {
     setBusyId(orderId);
     try {
       await updateStatus(orderId, status);
@@ -60,6 +61,14 @@ export function KdsBoard() {
               {t.update}
             </Button>
             <ThemeToggle />
+            <button
+              type="button"
+              onClick={() => router.push("/profile")}
+              className="p-2 text-[var(--muted)] hover:text-[var(--ink)]"
+              title={t.profile}
+            >
+              <UserCircle className="size-4" />
+            </button>
             <button onClick={() => {
                 useAuthStore.getState().logout();
                 window.location.href = "/login";

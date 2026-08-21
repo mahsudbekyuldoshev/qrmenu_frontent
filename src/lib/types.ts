@@ -5,20 +5,26 @@ export type OrderStatus =
   | "delivered"
   | "cancelled";
 
-export type StaffRole = "chef" | "waiter" | "director" | "manager" | "super-admin";
+export type StaffRole =
+  | "chef"
+  | "kitchen"
+  | "waiter"
+  | "director"
+  | "manager"
+  | "super-admin";
 
 export interface User {
-  id: number;
+  id: number | string;
   phone: string;
-  first_name: string;
-  last_name: string;
+  email?: string;
+  first_name?: string;
+  last_name?: string;
   role: StaffRole;
-  restaurant_id: number | null;
-  restaurant_slug: string | null;
-  restaurant_name: string | null;
+  restaurant_id?: number | null;
+  restaurant_slug?: string | null;
+  restaurant_name?: string | null;
   // computed convenience
   fullName?: string;
-  email?: string;
   restaurantName?: string;
 }
 
@@ -36,18 +42,18 @@ export interface LoginPayload {
 export interface RegisterPayload {
   phone: string;
   password: string;
-  full_name: string;
-  role: "waiter" | "chef";
+  full_name?: string;
+  role?: "waiter" | "chef" | "kitchen";
 }
 
 export interface Category {
-  id: number;
+  id: number | string;
   name: string;
-  slug: string;
+  slug?: string;
   description?: string;
-  is_active: boolean;
-  ordering: number;
-  dishes: MenuItem[];
+  is_active?: boolean;
+  ordering?: number;
+  dishes?: MenuItem[];
   // legacy compat
   nameUz?: string;
   nameRu?: string;
@@ -56,16 +62,16 @@ export interface Category {
 }
 
 export interface MenuItem {
-  id: number;
-  category: number;
+  id: number | string;
+  category?: number | string;
   name: string;
   description?: string;
   price: string | number;
-  image: string | null;
-  is_available: boolean;
-  requiresPreparation: boolean; // Add this
+  image?: string | null;
+  is_available?: boolean;
+  requiresPreparation?: boolean;
   // legacy compat fields
-  categoryId?: string;
+  categoryId?: string | number;
   nameUz?: string;
   nameRu?: string;
   nameEn?: string;
@@ -80,21 +86,24 @@ export interface MenuItem {
 export interface CartItem {
   menuItemId: string;
   name: string;
-  nameUz: string;
+  nameUz?: string;
   price: number;
   quantity: number;
   note?: string;
 }
 
 export interface OrderItem {
-  id: number;
-  order: number;
-  dish: number;
-  dish_name: string;
+  id: number | string;
+  order?: number | string;
+  dish?: number | string;
+  dish_name?: string;
   quantity: number;
-  price: string | number;
+  price?: string | number;
+  requires_kitchen?: boolean;
+  status?: string;
+  status_display?: string;
   // legacy compat
-  menuItemId?: string;
+  menuItemId?: string | number;
   name?: string;
   nameUz?: string;
   unitPrice?: number;
@@ -102,32 +111,33 @@ export interface OrderItem {
 }
 
 export interface Order {
-  id: number;
-  restaurant: number;
-  restaurant_name: string;
-  table: number;
-  table_number: number;
+  id: number | string;
+  restaurant?: number | string;
+  restaurant_name?: string;
+  table?: number | string;
+  table_number?: number;
   status: OrderStatus;
-  status_display: string;
-  total_price: string | number;
+  status_display?: string;
+  total_price?: string | number;
   comment?: string;
   items: OrderItem[];
-  created_at: string;
+  created_at?: string;
   // legacy compat
   tableNumber?: number;
   totalAmount?: number;
+  createdAt?: string;
   updatedAt?: string;
   notes?: string;
 }
 
 export interface TableStatus {
-  id: number;
+  id?: number | string;
   number: number;
-  qr_hash: string;
-  is_active: boolean;
+  qr_hash?: string;
+  is_active?: boolean;
   // legacy compat
   isOccupied?: boolean;
-  currentOrderId?: string | null;
+  currentOrderId?: string | number | null;
   guestCount?: number;
   seatedAt?: string | null;
   turnoverToday?: number;
@@ -154,7 +164,7 @@ export interface Waiter extends StaffMember {
 }
 
 export interface Chef extends StaffMember {
-  role: "kitchen";
+  role: "kitchen" | "chef";
 }
 
 export type SubscriptionType = "Trial" | "Premium";
@@ -162,11 +172,11 @@ export type SubscriptionType = "Trial" | "Premium";
 export interface Restaurant {
   id: string;
   name: string;
-  address: string;
-  subscriptionType: SubscriptionType;
-  daysLeft: number;
-  directorId: string;
-  status: "active" | "inactive";
+  address?: string;
+  subscriptionType?: SubscriptionType;
+  daysLeft?: number;
+  directorId?: string;
+  status?: "active" | "inactive";
   coordinates?: { lat: number; lng: number };
 }
 
@@ -184,11 +194,11 @@ export interface DashboardStats {
   occupiedTables: number;
   totalTables: number;
   revenueByHour: { hour: string; amount: number }[];
-  revenueByDay: { day: string; amount: number }[];
-  revenueByWeek: { week: string; amount: number }[];
+  revenueByDay?: { day: string; amount: number }[];
+  revenueByWeek?: { week: string; amount: number }[];
   topItems: { name: string; quantity: number; revenue: number }[];
-  totalEmployees: number;
-  totalMonthlySalary: number;
+  totalEmployees?: number;
+  totalMonthlySalary?: number;
 }
 
 export interface CreateOrderPayload {

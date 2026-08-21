@@ -59,7 +59,7 @@ export function useOrders(filterStatuses?: OrderStatus[]) {
   const { connected } = useWebSocket({ onEvent });
 
   const updateStatus = useCallback(
-    async (orderId: string, status: OrderStatus) => {
+    async (orderId: string | number, status: OrderStatus) => {
       const res = await orderService.updateStatus(orderId, status);
       const updated = res.data;
       setOrders((prev) => {

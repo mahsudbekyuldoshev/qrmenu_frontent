@@ -24,9 +24,9 @@ export function CartDrawer({ tableNumber }: { tableNumber: number }) {
     setSuccess(null);
     try {
       await orderService.createOrder({
-        tableNumber,
-        items: items.map((i) => ({
-          menuItemId: i.menuItemId,
+        table: tableNumber,
+        uploaded_items: items.map((i) => ({
+          dish: Number(i.menuItemId),
           quantity: i.quantity,
         })),
       });
@@ -42,7 +42,6 @@ export function CartDrawer({ tableNumber }: { tableNumber: number }) {
   async function callWaiter(reason: string = "Mijoz chaqirdi") {
     setCalling(true);
     try {
-      // Assuming qrHash from somewhere? Will use table number as temp hack as in original code
       await orderService.callWaiter(String(tableNumber), { reason });
       setSuccess(reason === "bill_request" ? "To'lov so'rovi yuborildi." : "Ofitsiant chaqirildi. Tez orada keladi.");
       setOpen(true);
@@ -64,7 +63,7 @@ export function CartDrawer({ tableNumber }: { tableNumber: number }) {
           disabled={calling}
         >
           <DollarSign className="size-4 mr-2" />
-          To'lov
+          To&apos;lov
         </Button>
         <Button
           variant="secondary"
@@ -132,7 +131,7 @@ export function CartDrawer({ tableNumber }: { tableNumber: number }) {
                     >
                       <div className="min-w-0">
                         <p className="truncate font-medium text-[var(--ink)]">
-                          {item.nameUz}
+                          {item.nameUz || item.name}
                         </p>
                         <p className="text-sm text-[var(--muted)]">
                           {formatMoney(item.price)}

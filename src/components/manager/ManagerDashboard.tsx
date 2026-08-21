@@ -1,5 +1,7 @@
+"use client";
+
 import { menuService } from "@/lib/services/menu.service";
-import { Plus, Edit2, Trash2, Image as ImageIcon, Save, Loader2, LogOut, UtensilsCrossed, XCircle, Sparkles } from "lucide-react";
+import { Plus, Edit2, Trash2, Image as ImageIcon, Save, Loader2, LogOut, UtensilsCrossed, XCircle, Sparkles, UserCircle } from "lucide-react";
 import toast from "react-hot-toast";
 import Link from "next/link";
 import type { MenuItem, Category } from "@/lib/types";
@@ -104,6 +106,14 @@ export function ManagerDashboard() {
           <>
             <LanguageSelect />
             <ThemeToggle />
+            <button
+              type="button"
+              onClick={() => router.push("/profile")}
+              className="p-2 text-[var(--muted)] hover:text-[var(--ink)]"
+              title={t.profile}
+            >
+              <UserCircle className="size-4" />
+            </button>
             <button onClick={() => {
                 useAuthStore.getState().logout();
                 router.push("/login");

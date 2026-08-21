@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import { BellRing, Radio, RefreshCw, X, LogOut } from "lucide-react";
+import { BellRing, Radio, RefreshCw, X, LogOut, UserCircle } from "lucide-react";
 import { useOrders } from "@/hooks/useOrders";
 import { useWebSocket } from "@/hooks/useWebSocket";
 import { OrderTicket } from "@/components/kds/OrderTicket";
@@ -33,7 +33,7 @@ export function WaiterBoard() {
 
   const { orders, loading, error, connected, refresh, updateStatus } =
     useOrders(WAITER_STATUSES);
-  const [busyId, setBusyId] = useState<string | null>(null);
+  const [busyId, setBusyId] = useState<string | number | null>(null);
   const [calls, setCalls] = useState<WaiterCall[]>([]);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -48,14 +48,10 @@ export function WaiterBoard() {
   });
 
   useEffect(() => {
-    if (!calls.length) return;
-    const timer = setTimeout(() => {
-      setCalls((prev) => prev.slice(0, -1));
-    }, 20000);
-    return () => clearTimeout(timer);
-  }, [calls]);
+    // Initial fetch of active calls (optional mock or real backend queue)
+  }, []);
 
-  async function markDelivered(orderId: string) {
+  async function markDelivered(orderId: string | number) {
     setBusyId(orderId);
     try {
       await updateStatus(orderId, "delivered");
@@ -97,6 +93,14 @@ export function WaiterBoard() {
               {t.update}
             </Button>
             <ThemeToggle />
+            <button
+              type="button"
+              onClick={() => router.push("/profile")}
+              className="p-2 text-[var(--muted)] hover:text-[var(--ink)]"
+              title={t.profile}
+            >
+              <UserCircle className="size-4" />
+            </button>
             <button onClick={() => {
                 useAuthStore.getState().logout();
                 router.push("/login");

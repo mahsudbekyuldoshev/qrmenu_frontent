@@ -2,7 +2,23 @@
 
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import type { AuthResponse, User } from "@/lib/types";
+import type { AuthResponse, StaffRole, User } from "@/lib/types";
+
+/** Backend (`super_admin`, `chef`) → frontend role values. */
+export function normalizeRole(role: string | undefined | null): StaffRole {
+  switch (role) {
+    case "super_admin":
+      return "super-admin";
+    case "kitchen":
+      return "chef";
+    default:
+      return (role as StaffRole) || "director";
+  }
+}
+
+function normalizeUser(user: User): User {
+  return { ...user, role: normalizeRole(user.role) };
+}
 
 interface AuthState {
   user: User | null;
@@ -23,7 +39,7 @@ export const useAuthStore = create<AuthState>()(
 
       setSession: (auth) =>
         set({
-          user: auth.user,
+          user: normalizeUser(auth.user),
           accessToken: auth.access,
           refreshToken: auth.refresh,
         }),
@@ -48,7 +64,8 @@ export const useAuthStore = create<AuthState>()(
 );
 
 export function roleHomePath(role: User["role"]): string {
-  switch (role) {
+  switch (normalizeRole(role)) {
+    case "chef":
     case "kitchen":
       return "/kds";
     case "waiter":

@@ -32,6 +32,7 @@ type MockAccount = User & { password: string };
 const mockAccounts: MockAccount[] = [
   {
     id: "usr_demo_dir",
+    phone: "901234567",
     email: "901234567@restoflow.uz",
     password: "demo1234",
     fullName: "Aziza Karimova",
@@ -40,6 +41,7 @@ const mockAccounts: MockAccount[] = [
   },
   {
     id: "usr_demo_kit",
+    phone: "907654321",
     email: "907654321@restoflow.uz",
     password: "demo1234",
     fullName: "Jasur Aliyev",
@@ -48,6 +50,7 @@ const mockAccounts: MockAccount[] = [
   },
   {
     id: "usr_demo_wai",
+    phone: "900001122",
     email: "900001122@restoflow.uz",
     password: "demo1234",
     fullName: "Madina Yusupova",
@@ -56,6 +59,7 @@ const mockAccounts: MockAccount[] = [
   },
   {
     id: "usr_demo_man",
+    phone: "901112233",
     email: "901112233@restoflow.uz",
     password: "demo1234",
     fullName: "Manager User",
@@ -64,6 +68,7 @@ const mockAccounts: MockAccount[] = [
   },
   {
     id: "usr_demo_sa",
+    phone: "909998877",
     email: "909998877@restoflow.uz",
     password: "demo1234",
     fullName: "Super Admin",
@@ -364,7 +369,9 @@ export const api = {
         photographer: r.user.name,
       }));
     }
-    return request<UnsplashImage[]>(`/v1/manager/backgrounds/search/?q=${encodeURIComponent(q)}`);
+    return request<UnsplashImage[]>(
+      `/manager/backgrounds/search/?q=${encodeURIComponent(q)}`,
+    );
   },
 
   async selectBackground(payload: { image_url: string; unsplash_id: string }): Promise<{ menu_background: string }> {
@@ -373,7 +380,7 @@ export const api = {
       // Simulate server downloading the image and returning a URL
       return { menu_background: payload.image_url };
     }
-    return request<{ menu_background: string }>("/v1/manager/backgrounds/select/", {
+    return request<{ menu_background: string }>("/manager/backgrounds/select/", {
       method: "POST",
       body: JSON.stringify(payload),
     });

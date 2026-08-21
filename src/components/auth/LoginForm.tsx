@@ -8,16 +8,7 @@ import { authService } from "@/lib/services/auth.service";
 import { roleHomePath, useAuthStore } from "@/store/auth-store";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
-
 import { usePreferences } from "@/providers/PreferencesProvider";
-
-const demoAccounts = [
-  { label: "Direktor", phone: "901234567" },
-  { label: "Oshxona", phone: "907654321" },
-  { label: "Ofitsiant", phone: "900001122" },
-  { label: "Manager", phone: "901112233" },
-  { label: "Super Admin", phone: "909998877" },
-];
 
 export function LoginForm() {
   const router = useRouter();
@@ -44,24 +35,29 @@ export function LoginForm() {
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
     setError(null);
-
     const cleanPhone = phone.replace(/\s/g, "");
-    if (cleanPhone.length < 9 || !password) {
-      setError(t.loginSubtitle);
+    if (!cleanPhone) {
+      setError(t.phone);
+      return;
+    }
+    if (!password) {
+      setError(t.password);
       return;
     }
 
     setLoading(true);
     try {
-      const auth = await authService.login({
-        phone: cleanPhone,
-        email: cleanPhone + "@restoflow.uz",
-        password,
-      } as any);
+      // Backend USERNAME_FIELD = phone, format: +998XXXXXXXXX
+      const phoneE164 = cleanPhone.startsWith("998")
+        ? `+${cleanPhone}`
+        : `+998${cleanPhone}`;
+      const auth = await authService.login({ phone: phoneE164, password });
       setSession(auth.data);
-      router.push(roleHomePath(auth.data.user.role));
-    } catch (err) {
-      setError(err instanceof Error ? err.message : t.login);
+      const target = roleHomePath(auth.data.user.role);
+      router.push(target);
+    } catch (err: any) {
+      const msg = err?.response?.data?.detail || err?.response?.data?.non_field_errors?.[0] || err?.message;
+      setError(msg || "Telefon raqam yoki parol noto'g'ri");
     } finally {
       setLoading(false);
     }
@@ -79,7 +75,8 @@ export function LoginForm() {
           </span>
           <input
             type="tel"
-            className="flex h-11 w-full rounded-xl border border-[var(--line)] bg-[var(--surface)] pl-14 pr-4 text-sm text-[var(--ink)] outline-none transition focus:border-[var(--accent-bright)]/50 focus:ring-4 focus:ring-[var(--accent-bright)]/10"
+            autoComplete="tel"
+            className="flex h-12 w-full rounded-xl border border-[var(--line)] bg-[var(--surface)] pl-14 pr-4 text-sm text-[var(--ink)] outline-none transition focus:border-[var(--accent-bright)]/50 focus:ring-4 focus:ring-[var(--accent-bright)]/10"
             placeholder="90 000 00 00"
             value={phone}
             onChange={(e) => setPhone(formatPhone(e.target.value))}
@@ -118,7 +115,7 @@ export function LoginForm() {
         </div>
       ) : null}
 
-      <Button type="submit" size="lg" className="w-full" disabled={loading}>
+      <Button type="submit" size="lg" className="w-full h-12 rounded-xl font-bold" disabled={loading}>
         {loading ? (
           <>
             <Loader2 className="size-4 animate-spin" />
@@ -128,28 +125,6 @@ export function LoginForm() {
           t.login
         )}
       </Button>
-
-      {/* Demo account quick fill */}
-      <div className="rounded-xl border border-[var(--line)] bg-[var(--bg)] p-3">
-        <p className="mb-2 text-xs font-medium text-[var(--muted)]">
-          Demo (pass: demo1234)
-        </p>
-        <div className="flex flex-wrap gap-2">
-          {demoAccounts.map((acc) => (
-            <button
-              key={acc.phone}
-              type="button"
-              className="rounded-lg border border-[var(--line)] bg-[var(--surface)] px-3 py-1.5 text-xs font-medium text-[var(--ink)] transition hover:border-[var(--accent)]/40 hover:bg-[var(--surface-2)]"
-              onClick={() => {
-                setPhone(formatPhone(acc.phone));
-                setPassword("demo1234");
-              }}
-            >
-              {acc.label}
-            </button>
-          ))}
-        </div>
-      </div>
     </form>
   );
 }
@@ -158,12 +133,11 @@ export function LoginFooter() {
   const { t } = usePreferences();
   return (
     <>
-      {t.noAccount}{" "}
       <Link
-        href="/register"
-        className="font-medium text-[var(--accent-bright)] underline-offset-2 hover:underline"
+        href="/contact"
+        className="font-medium text-[var(--accent)] underline-offset-2 hover:underline"
       >
-        {t.register}
+        {t.marketing?.requestDemo || "Demo so'rash"}
       </Link>
     </>
   );
