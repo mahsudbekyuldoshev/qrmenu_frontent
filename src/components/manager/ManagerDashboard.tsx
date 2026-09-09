@@ -14,6 +14,7 @@ import { ThemeToggle } from "@/components/chrome/ThemeToggle";
 import { LanguageSelect } from "@/components/chrome/LanguageSelect";
 import { useRouter } from "next/navigation";
 import { ImagePickerModal } from "@/components/manager/ImagePickerModal";
+import { AnalyticsTable } from "@/components/manager/AnalyticsTable";
 import { useEffect, useState } from "react";
 
 export function ManagerDashboard() {
@@ -125,6 +126,7 @@ export function ManagerDashboard() {
       />
 
       <main className="mx-auto max-w-5xl px-4 py-8 md:px-10 space-y-12">
+        <AnalyticsTable />
         {/* Menu Management */}
         <section className="rounded-[2.5rem] border border-[var(--line)] bg-[var(--surface)] p-8 shadow-xl shadow-black/5 animate-in fade-in duration-700">
           <div className="flex items-center justify-between mb-8">

@@ -1,8 +1,10 @@
+
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { TopBar } from "@/components/chrome/TopBar";
 import { ThemeToggle } from "@/components/chrome/ThemeToggle";
 import { LanguageSelect } from "@/components/chrome/LanguageSelect";
+import { Flame, ArrowLeft } from "lucide-react";
 
 interface AuthShellProps {
   title: string;
@@ -13,37 +15,22 @@ interface AuthShellProps {
 
 export function AuthShell({ title, subtitle, children, footer }: AuthShellProps) {
   return (
-    <main className="hub-shell relative min-h-dvh overflow-hidden">
-      {/* Background orbs */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 opacity-20"
-        style={{
-          backgroundImage:
-            "url(https://images.unsplash.com/photo-1559339352-11d035aa65de?w=1600&q=80)",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          maskImage:
-            "linear-gradient(to bottom, rgba(0,0,0,0.9), rgba(0,0,0,0.45) 60%, transparent)",
-        }}
-      />
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -left-24 top-24 size-72 rounded-full bg-[var(--accent)]/20 blur-3xl"
-      />
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -right-16 bottom-10 size-80 rounded-full bg-teal-400/10 blur-3xl"
-      />
+    <main className="relative min-h-dvh flex flex-col overflow-hidden">
+      {/* Login sahifasiga xos qo'shimcha qorong'i qatlam */}
+      <div className="absolute inset-0 -z-10 bg-black/20 dark:bg-black/40" />
 
       {/* TopBar */}
       <TopBar
         left={
-          <Link
-            href="/"
-            className="font-[family-name:var(--font-display)] text-lg font-bold tracking-tight text-[var(--ink)]"
-          >
-            Resto<span className="text-[var(--accent)]">Flow</span>
+          <Link href="/" className="group flex items-center gap-2.5">
+            <div className="flex size-9 items-center justify-center rounded-2xl bg-[var(--accent)] text-[var(--accent-fg)] shadow-md shadow-[var(--accent)]/20 transition group-hover:scale-105">
+              <Flame className="size-5" />
+            </div>
+            <div className="flex flex-col">
+              <span className="font-[family-name:var(--font-display)] text-xl font-bold tracking-tight text-[var(--ink)] leading-none">
+                Resto<span className="text-[var(--accent)]">Flow</span>
+              </span>
+            </div>
           </Link>
         }
         right={
@@ -57,14 +44,12 @@ export function AuthShell({ title, subtitle, children, footer }: AuthShellProps)
       <div className="relative mx-auto flex w-full max-w-md flex-col px-5 py-12 sm:px-6">
         <Link
           href="/login"
-          className="animate-fade-up mb-8 inline-flex w-fit items-center gap-2 text-sm text-[var(--muted)] transition hover:text-[var(--accent-bright)]"
+          className="animate-fade-up mb-8 inline-flex w-fit items-center gap-2 rounded-full border border-[var(--line)] bg-[var(--surface)]/50 px-4 py-2 text-sm font-semibold text-[var(--ink)] transition hover:bg-[var(--surface)] hover:text-[var(--accent)]"
         >
-          ← Rolni tanlash
+          <ArrowLeft className="size-4" />
+          Rolni tanlash
         </Link>
 
-        <p className="animate-fade-up text-xs uppercase tracking-[0.28em] text-[var(--accent-bright)]">
-          RestoFlow
-        </p>
         <h1
           className="animate-fade-up mt-3 font-[family-name:var(--font-display)] text-4xl tracking-tight text-[var(--ink)]"
           style={{ animationDelay: "60ms" }}

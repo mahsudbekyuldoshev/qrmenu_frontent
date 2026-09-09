@@ -32,6 +32,7 @@ import type {
   Chef,
 } from "@/lib/types";
 import { formatMoney, formatTime } from "@/lib/utils";
+import { translations } from "@/lib/translations";
 import { StatusBadge } from "@/components/ui/Badge";
 import { TopBar } from "@/components/chrome/TopBar";
 import { ThemeToggle } from "@/components/chrome/ThemeToggle";
@@ -93,7 +94,7 @@ function toMember(item: StaffApiItem) {
     joinedDate: item.date_joined.split("T")[0],
     birthYear: 0,
     salary: 0,
-    role: item.role as Manager["role"],
+    role: item.role,
     employmentStatus: item.employment_status as EmploymentStatus,
     phone: item.phone,
   };
@@ -824,7 +825,7 @@ function StaffTable({
   loading: boolean;
   onAdd?: () => void;
   onStatusChange: (id: string, status: EmploymentStatus) => void;
-  t: Record<string, string>;
+  t: typeof translations.uz;
 }) {
   return (
     <div className="animate-in slide-in-from-bottom-4 space-y-6 duration-500">

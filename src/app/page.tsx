@@ -16,6 +16,8 @@ import {
 import { MarketingLayout } from "@/components/marketing/MarketingLayout";
 import { Button } from "@/components/ui/Button";
 import { usePreferences } from "@/providers/PreferencesProvider";
+import DashboardPreview from "@/components/marketing/DashboardPreview";
+import { HeroMouseGlow } from "@/components/marketing/HeroMouseGlow";
 
 export default function HomePage() {
   const { t } = usePreferences();
@@ -80,51 +82,26 @@ export default function HomePage() {
     <MarketingLayout>
       {/* ─── 1. HERO SECTION ──────────────────────────────────────────────── */}
       <section className="relative overflow-hidden pt-12 pb-20 md:pt-20 md:pb-28">
-        {/* Background photo with gradient overlay */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 -z-10"
-          style={{
-            backgroundImage:
-              "url(https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1600&q=80)",
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            opacity: 0.1,
-            maskImage:
-              "linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0.4) 60%, transparent 100%)",
-          }}
-        />
-
-        {/* Ambient Glows */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute -left-40 top-10 -z-10 size-[550px] rounded-full bg-[var(--accent)]/15 blur-[120px]"
-        />
-        <div
-          aria-hidden
-          className="pointer-events-none absolute -right-40 top-20 -z-10 size-[500px] rounded-full bg-orange-500/10 blur-[130px]"
-        />
-
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-4xl text-center">
             {/* Badge */}
-            <div className="inline-flex items-center gap-2 rounded-full border border-[var(--accent)]/30 bg-[var(--accent)]/10 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-[var(--accent)]">
-              <span className="size-2 rounded-full bg-[var(--accent)] animate-pulse" />
+            <div className="animate-fade-in-up [animation-delay:0ms] [animation-fill-mode:forwards] opacity-0 inline-flex items-center gap-2 rounded-full border border-[var(--accent)]/50 bg-[var(--accent)]/20 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-[var(--accent-bright)] backdrop-blur-sm">
+              <span className="size-2 rounded-full bg-[var(--accent-bright)] animate-pulse" />
               {m.badge}
             </div>
 
             {/* Main Headline */}
-            <h1 className="mt-8 font-[family-name:var(--font-display)] text-3xl font-extrabold tracking-tight text-[var(--ink)] sm:text-5xl lg:text-6xl leading-[1.12]">
+            <h1 className="animate-fade-in-up [animation-delay:150ms] [animation-fill-mode:forwards] opacity-0 mt-8 font-[family-name:var(--font-display)] text-3xl font-extrabold tracking-tight text-[var(--ink)] sm:text-5xl lg:text-6xl leading-[1.12]">
               {m.heroTitleAccent}
             </h1>
 
             {/* Description */}
-            <p className="mx-auto mt-6 max-w-2xl text-base sm:text-lg leading-relaxed text-[var(--muted)]">
+            <p className="animate-fade-in-up [animation-delay:320ms] [animation-fill-mode:forwards] opacity-0 mx-auto mt-6 max-w-2xl text-base sm:text-lg leading-relaxed text-[var(--muted)]">
               {m.heroDesc}
             </p>
 
             {/* CTA Buttons */}
-            <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
+            <div className="animate-fade-in-up [animation-delay:480ms] [animation-fill-mode:forwards] opacity-0 mt-10 flex flex-wrap items-center justify-center gap-4">
               <Link href="/login">
                 <Button size="lg" className="h-14 px-8 text-base font-bold shadow-lg shadow-[var(--accent)]/25">
                   {m.heroCtaPrimary} &rarr;
@@ -144,8 +121,10 @@ export default function HomePage() {
           </div>
 
           {/* Interactive Live Dashboard Preview Mockup */}
-          <div className="mt-16 sm:mt-20">
-            <div className="relative mx-auto max-w-5xl rounded-3xl border border-[var(--line)] bg-[var(--surface)]/90 p-4 shadow-2xl shadow-black/10 backdrop-blur-xl sm:p-8">
+          <div className="animate-fade-in-up [animation-delay:650ms] [animation-fill-mode:forwards] opacity-0 mt-16 sm:mt-20">
+            <DashboardPreview>
+              <div className="relative mx-auto max-w-5xl rounded-3xl border border-[var(--line)] bg-[var(--surface)]/90 p-4 shadow-2xl shadow-black/10 backdrop-blur-xl sm:p-8">
+
               {/* Fake Browser / App Header */}
               <div className="flex items-center justify-between border-b border-[var(--line)]/80 pb-4">
                 <div className="flex items-center gap-2">
@@ -209,6 +188,7 @@ export default function HomePage() {
                 </div>
               </div>
             </div>
+            </DashboardPreview>
           </div>
         </div>
       </section>

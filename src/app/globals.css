@@ -103,7 +103,7 @@ body {
 }
 
 body {
-  background: var(--background);
+  background: transparent;
   color: var(--foreground);
   font-family: var(--font-body), system-ui, sans-serif;
   transition:
@@ -224,4 +224,101 @@ body {
   );
   background-size: 200% 100%;
   animation: shimmer 1.8s ease-in-out infinite;
+}
+
+@keyframes fade-in-up {
+  0% { opacity: 0; transform: translateY(24px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in-up {
+  animation: fade-in-up 0.8s ease forwards;
+}
+
+/* ─── Hero Background Animatsiyalari ─────────────────────────────────────── */
+
+/* 1. Gradient Bloblar */
+@keyframes hero-blob-1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33%       { transform: translate(28px, 36px) scale(1.07); }
+  66%       { transform: translate(-12px, 20px) scale(0.96); }
+}
+
+@keyframes hero-blob-2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  40%       { transform: translate(-38px, 28px) scale(1.05); }
+  75%       { transform: translate(18px, -16px) scale(0.97); }
+}
+
+@keyframes hero-blob-3 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50%       { transform: translate(22px, -28px) scale(1.1); }
+}
+
+.animate-hero-blob-1 {
+  animation: hero-blob-1 10s ease-in-out infinite;
+}
+.animate-hero-blob-2 {
+  animation: hero-blob-2 13s ease-in-out infinite 1s;
+}
+.animate-hero-blob-3 {
+  animation: hero-blob-3 16s ease-in-out infinite 2.5s;
+}
+
+/* 2. QR Scan-line */
+@keyframes hero-scan-line {
+  0%   { transform: translateY(-100%); opacity: 0; }
+  8%   { opacity: 1; }
+  92%  { opacity: 1; }
+  100% { transform: translateY(700%); opacity: 0; }
+}
+
+.animate-hero-scan-line {
+  animation: hero-scan-line 7s linear infinite;
+}
+
+/* 3. Steam chiziqlari */
+@keyframes hero-steam-1 {
+  0%, 100% { transform: translateY(0) scaleX(1);   opacity: 0.7; }
+  50%       { transform: translateY(-16px) scaleX(1.04); opacity: 1; }
+}
+
+@keyframes hero-steam-2 {
+  0%, 100% { transform: translateY(0) scaleX(1);   opacity: 0.6; }
+  50%       { transform: translateY(-22px) scaleX(0.97); opacity: 0.95; }
+}
+
+@keyframes hero-steam-3 {
+  0%, 100% { transform: translateY(0) scaleX(1);   opacity: 0.55; }
+  50%       { transform: translateY(-14px) scaleX(1.06); opacity: 1; }
+}
+
+.animate-hero-steam-1 {
+  animation: hero-steam-1 4.2s ease-in-out infinite;
+}
+.animate-hero-steam-2 {
+  animation: hero-steam-2 5s ease-in-out infinite 0.6s;
+}
+.animate-hero-steam-3 {
+  animation: hero-steam-3 5.8s ease-in-out infinite 1.2s;
+}
+
+/* ─── Reduced Motion ─────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .animate-hero-blob-1,
+  .animate-hero-blob-2,
+  .animate-hero-blob-3,
+  .animate-hero-scan-line,
+  .animate-hero-steam-1,
+  .animate-hero-steam-2,
+  .animate-hero-steam-3 {
+    animation: none !important;
+    transform: none !important;
+    opacity: 0.5 !important;
+  }
+  
+  .animate-fade-in-up {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
 }
