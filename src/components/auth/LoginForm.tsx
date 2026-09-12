@@ -99,6 +99,16 @@ export function LoginForm() {
           t.login
         )}
       </Button>
+
+      <Button
+        type="button"
+        variant="ghost"
+        size="lg"
+        className="w-full h-12 rounded-xl font-bold"
+        onClick={() => router.push("/")}
+      >
+        {t.back || "Ortga qaytish"}
+      </Button>
     </form>
   );
 }
