@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 import { TopBar } from "@/components/chrome/TopBar";
 import { ThemeToggle } from "@/components/chrome/ThemeToggle";
 import { LanguageSelect } from "@/components/chrome/LanguageSelect";
-import { Flame, ArrowLeft } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 
 interface AuthShellProps {
   title: string;
@@ -23,14 +23,8 @@ export function AuthShell({ title, subtitle, children, footer }: AuthShellProps)
       <TopBar
         left={
           <Link href="/" className="group flex items-center gap-2.5">
-            <div className="flex size-9 items-center justify-center rounded-2xl bg-[var(--accent)] text-[var(--accent-fg)] shadow-md shadow-[var(--accent)]/20 transition group-hover:scale-105">
-              <Flame className="size-5" />
-            </div>
-            <div className="flex flex-col">
-              <span className="font-[family-name:var(--font-display)] text-xl font-bold tracking-tight text-[var(--ink)] leading-none">
-                Resto<span className="text-[var(--accent)]">Flow</span>
-              </span>
-            </div>
+            <img src="/logo.svg" alt="RestoFlow" className="h-9 w-auto transition group-hover:scale-105" />
+            {/* Logo handled by SVG */}
           </Link>
         }
         right={

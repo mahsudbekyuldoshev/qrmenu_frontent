@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import {
   ChefHat,
   Briefcase,
+  ChevronDown,
   LayoutDashboard,
   LogOut,
   Plus,
@@ -39,6 +40,7 @@ import { ThemeToggle } from "@/components/chrome/ThemeToggle";
 import { LanguageSelect } from "@/components/chrome/LanguageSelect";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { PhoneInput } from "@/components/ui/PhoneInput";
 import { roleHomePath, useAuthStore } from "@/store/auth-store";
 import { useRouter } from "next/navigation";
 import { usePreferences } from "@/providers/PreferencesProvider";
@@ -150,9 +152,12 @@ export function DirectorDashboard() {
             .map(toMember) as Chef[],
         );
       })
-      .catch(() => toast.error(t.profileLoadError || "Xatolik"))
+      .catch((err) => {
+        // Silent fail — stafflar yuklanmasa ham dashboard ishlaydi
+        console.warn("Staff yüklenemedi:", err);
+      })
       .finally(() => setStaffLoading(false));
-  }, [t.profileLoadError]);
+  }, []);
 
   useEffect(() => {
     reloadStaff();
@@ -312,14 +317,19 @@ export function DirectorDashboard() {
     }
   }
 
+  // Xodimlar submenu ochiqligi
+  const [staffMenuOpen, setStaffMenuOpen] = useState(true);
+
   const NavItem = ({
     tab,
     label,
     icon: Icon,
+    indent = false,
   }: {
     tab: DirectorTab;
     label: string;
     icon: typeof LayoutDashboard;
+    indent?: boolean;
   }) => (
     <button
       type="button"
@@ -327,23 +337,58 @@ export function DirectorDashboard() {
         setActiveTab(tab);
         setMobileNavOpen(false);
       }}
-      className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 transition ${
+      className={`flex w-full items-center gap-3 rounded-xl px-4 py-2.5 transition ${
+        indent ? "pl-10" : ""
+      } ${
         activeTab === tab
           ? "bg-[var(--accent)] text-white"
           : "text-[var(--muted)] hover:bg-[var(--surface-2)]"
       }`}
     >
-      <Icon className="size-5" />
-      <span className="font-medium">{label}</span>
+      <Icon className="size-4 shrink-0" />
+      <span className="font-medium text-sm">{label}</span>
     </button>
   );
 
   const sidebarNav = (
     <>
-      <NavItem tab="analytics" label={t.analytics} icon={LayoutDashboard} />
-      <NavItem tab="managers" label={t.managers} icon={Users} />
-      <NavItem tab="waiters" label={t.waiters} icon={Briefcase} />
-      <NavItem tab="chefs" label={t.chefs} icon={ChefHat} />
+      {/* Analitika */}
+      <button
+        type="button"
+        onClick={() => { setActiveTab("analytics"); setMobileNavOpen(false); }}
+        className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 transition ${
+          activeTab === "analytics"
+            ? "bg-[var(--accent)] text-white"
+            : "text-[var(--muted)] hover:bg-[var(--surface-2)]"
+        }`}
+      >
+        <LayoutDashboard className="size-5" />
+        <span className="font-medium">{t.analytics}</span>
+      </button>
+
+      {/* Xodimlar guruhi — dropdown */}
+      <div>
+        <button
+          type="button"
+          onClick={() => setStaffMenuOpen((v) => !v)}
+          className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-[var(--muted)] transition hover:bg-[var(--surface-2)]"
+        >
+          <Users className="size-5" />
+          <span className="flex-1 text-left font-medium">Xodimlar</span>
+          <ChevronDown
+            className={`size-4 transition-transform ${staffMenuOpen ? "rotate-180" : ""}`}
+          />
+        </button>
+        {staffMenuOpen && (
+          <div className="mt-1 space-y-1 border-l-2 border-[var(--line)] ml-6 pl-2">
+            <NavItem tab="managers" label={t.managers} icon={Briefcase} />
+            <NavItem tab="waiters" label={t.waiters} icon={UserCircle} />
+            <NavItem tab="chefs" label={t.chefs} icon={ChefHat} />
+          </div>
+        )}
+      </div>
+
+      {/* Menyu */}
       <button
         type="button"
         onClick={() => router.push("/director/menu")}
@@ -352,6 +397,8 @@ export function DirectorDashboard() {
         <UtensilsCrossed className="size-5" />
         <span className="font-medium">{t.menu}</span>
       </button>
+
+      {/* Profil */}
       <button
         type="button"
         onClick={() => router.push("/profile")}
@@ -362,6 +409,7 @@ export function DirectorDashboard() {
       </button>
     </>
   );
+
 
   const weekLabels =
     language === "ru"
@@ -750,11 +798,10 @@ export function DirectorDashboard() {
               {t.addStaff} ({addRole})
             </h3>
             <div className="space-y-3">
-              <Input
+              <PhoneInput
                 label={t.phone}
                 value={addPhone}
-                onChange={(e) => setAddPhone(e.target.value)}
-                placeholder="90 123 45 67"
+                onChange={setAddPhone}
               />
               <Input
                 label={t.firstName}

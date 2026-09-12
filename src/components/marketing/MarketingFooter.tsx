@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Flame, Mail, MapPin, Phone, Send, ShieldCheck } from "lucide-react";
+import { Mail, MapPin, Phone, Send, ShieldCheck } from "lucide-react";
 import { usePreferences } from "@/providers/PreferencesProvider";
 
 export function MarketingFooter() {
@@ -31,12 +31,8 @@ export function MarketingFooter() {
           {/* Brand Col */}
           <div className="space-y-4 lg:col-span-2">
             <Link href="/" className="group inline-flex items-center gap-2.5">
-              <div className="flex size-10 items-center justify-center rounded-2xl bg-[var(--accent)] text-[var(--accent-fg)] shadow-md shadow-[var(--accent)]/20 transition group-hover:scale-105">
-                <Flame className="size-5" />
-              </div>
-              <span className="font-[family-name:var(--font-display)] text-2xl font-bold tracking-tight text-[var(--ink)]">
-                Resto<span className="text-[var(--accent)]">Flow</span>
-              </span>
+              <img src="/logo.svg" alt="RestoFlow" className="h-10 w-auto transition group-hover:scale-105" />
+              {/* Logo handled by SVG */}
             </Link>
             <p className="max-w-sm text-sm leading-relaxed text-[var(--muted)]">
               {m.footerTagline}

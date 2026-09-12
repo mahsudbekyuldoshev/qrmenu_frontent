@@ -3,6 +3,7 @@ import { Plus_Jakarta_Sans, Inter } from "next/font/google";
 import { Toaster } from "react-hot-toast";
 import "./globals.css";
 import { PreferencesProvider } from "@/providers/PreferencesProvider";
+import { AuthProvider } from "@/providers/AuthProvider";
 
 const display = Plus_Jakarta_Sans({
   variable: "--font-display",
@@ -49,7 +50,9 @@ export default function RootLayout({
           <HeroMouseGlow />
         </div>
         <Toaster position="top-right" />
-        <PreferencesProvider>{children}</PreferencesProvider>
+        <PreferencesProvider>
+          <AuthProvider>{children}</AuthProvider>
+        </PreferencesProvider>
       </body>
     </html>
   );

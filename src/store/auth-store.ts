@@ -25,6 +25,7 @@ interface AuthState {
   accessToken: string | null;
   refreshToken: string | null;
   setSession: (auth: AuthResponse) => void;
+  setUser: (user: User) => void;
   logout: () => void;
   isAuthenticated: () => boolean;
   hasRole: (roles: User["role"] | User["role"][]) => boolean;
@@ -42,6 +43,10 @@ export const useAuthStore = create<AuthState>()(
           user: normalizeUser(auth.user),
           accessToken: auth.access,
           refreshToken: auth.refresh,
+        }),
+      setUser: (user) =>
+        set({
+          user: normalizeUser(user),
         }),
 
       logout: () =>
