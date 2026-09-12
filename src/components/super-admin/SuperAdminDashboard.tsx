@@ -257,13 +257,6 @@ export function SuperAdminDashboard() {
           <NavItem tab="analytics" label={t.analytics} icon={LayoutDashboard} />
           <NavItem tab="restaurants" label={t.restaurants} icon={Building2} />
           <NavItem tab="directors" label={t.directors} icon={Users} />
-          <button
-            type="button"
-            onClick={() => router.push("/profile")}
-            className="flex w-full items-center gap-3 px-4 py-3 rounded-xl transition hover:bg-[var(--surface-2)] text-[var(--muted)]"
-          >
-            <UserCircle className="size-5" /> <span className="font-medium">{t.profile}</span>
-          </button>
         </nav>
 
         <div className="pt-6 border-t border-[var(--line)]">

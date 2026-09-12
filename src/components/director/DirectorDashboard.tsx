@@ -398,15 +398,6 @@ export function DirectorDashboard() {
         <span className="font-medium">{t.menu}</span>
       </button>
 
-      {/* Profil */}
-      <button
-        type="button"
-        onClick={() => router.push("/profile")}
-        className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-[var(--muted)] transition hover:bg-[var(--surface-2)]"
-      >
-        <UserCircle className="size-5" />
-        <span className="font-medium">{t.profile}</span>
-      </button>
     </>
   );
 

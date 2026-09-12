@@ -20,6 +20,7 @@ import { ThemeToggle } from "@/components/chrome/ThemeToggle";
 import { LanguageSelect } from "@/components/chrome/LanguageSelect";
 import { useRouter } from "next/navigation";
 import { ImagePickerModal } from "@/components/manager/ImagePickerModal";
+import { CategoryModal } from "@/components/manager/CategoryModal";
 import { AnalyticsTable } from "@/components/manager/AnalyticsTable";
 import { useCallback, useEffect, useState } from "react";
 import type { EmploymentStatus, Waiter, Chef } from "@/lib/types";
@@ -244,15 +245,6 @@ export function ManagerDashboard() {
       >
         <UtensilsCrossed className="size-5" />
         <span className="font-medium">{t.menu}</span>
-      </button>
-
-      <button
-        type="button"
-        onClick={() => router.push("/profile")}
-        className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-[var(--muted)] transition hover:bg-[var(--surface-2)]"
-      >
-        <UserCircle className="size-5" />
-        <span className="font-medium">{t.profile}</span>
       </button>
     </>
   );
@@ -543,6 +535,15 @@ export function ManagerDashboard() {
             </div>
           </div>
         </div>
+      )}
+
+      {showCategoryModal && (
+        <CategoryModal
+          categories={categories}
+          t={t}
+          onClose={() => setShowCategoryModal(false)}
+          onUpdate={setCategories}
+        />
       )}
 
       {showImagePicker && (
