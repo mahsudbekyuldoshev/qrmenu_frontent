@@ -32,6 +32,7 @@ function toMember(item: StaffApiItem) {
     id: String(item.id),
     fullName: [item.first_name, item.last_name].filter(Boolean).join(" ") || item.phone,
     joinedDate: item.date_joined.split("T")[0],
+    birthYear: 1990, // Vaqtinchalik qiymat
     salary: 0,
     role: item.role,
     employmentStatus: item.employment_status as EmploymentStatus,
@@ -86,8 +87,8 @@ export function ManagerDashboard() {
     setStaffLoading(true);
     staffService.getAll()
       .then(({ data }) => {
-        setWaiters(data.filter((x) => x.role === "waiter").map(toMember) as Waiter[]);
-        setChefs(data.filter((x) => x.role === "chef" || x.role === "kitchen").map(toMember) as Chef[]);
+        setWaiters(data.filter((x) => x.role === "waiter").map(toMember) as unknown as Waiter[]);
+        setChefs(data.filter((x) => x.role === "chef" || x.role === "kitchen").map(toMember) as unknown as Chef[]);
       })
       .catch((err) => console.warn("Staff yuklanmadi:", err))
       .finally(() => setStaffLoading(false));
