@@ -37,11 +37,11 @@ export function AuthShell({ title, subtitle, children, footer }: AuthShellProps)
 
       <div className="relative mx-auto flex w-full max-w-md flex-col px-5 py-12 sm:px-6">
         <Link
-          href="/login"
+          href="/"
           className="animate-fade-up mb-8 inline-flex w-fit items-center gap-2 rounded-full border border-[var(--line)] bg-[var(--surface)]/50 px-4 py-2 text-sm font-semibold text-[var(--ink)] transition hover:bg-[var(--surface)] hover:text-[var(--accent)]"
         >
           <ArrowLeft className="size-4" />
-          Rolni tanlash
+          Ortga qaytish
         </Link>
 
         <h1
